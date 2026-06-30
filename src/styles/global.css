@@ -1,0 +1,111 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fraunces";
+@import "@fontsource-variable/quicksand";
+
+@theme {
+	--color-canvas: #faf6f0;
+	--color-surface: #f2eadf;
+	--color-surface-hover: #eae0d3;
+	--color-brand-sage: #8a9a5b;
+	--color-brand-sage-deep: #6b7b45;
+	--color-brand-sage-soft: #dce3c8;
+	--color-brand-terracotta: #d4a373;
+	--color-brand-blush: #e8d3d0;
+	--color-ink-primary: #4a4036;
+	--color-ink-secondary: #6d645a;
+	--color-ink-muted: #968f88;
+	--color-on-dark: #faf6f0;
+	--color-hairline: #e1d8c9;
+	--color-success: #7ca982;
+	--color-error: #d97b7b;
+
+	--font-heading: "Fraunces Variable", serif;
+	--font-body: "Quicksand Variable", sans-serif;
+	--font-code: "Geist Mono", monospace;
+
+	--radius-sm: 8px;
+	--radius-md: 16px;
+	--radius-lg: 24px;
+	--radius-xl: 32px;
+	--radius-full: 9999px;
+
+	--shadow-soft: 0 8px 30px rgba(74, 64, 54, 0.06);
+	--shadow-hover: 0 12px 40px rgba(74, 64, 54, 0.12);
+	--shadow-inner-inset: inset 0 2px 4px rgba(74, 64, 54, 0.04);
+}
+
+@layer base {
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	html {
+		scrollbar-width: thin;
+		scrollbar-color: var(--color-brand-sage) var(--color-brand-sage-soft);
+	}
+
+	::-webkit-scrollbar {
+		width: 10px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: var(--color-brand-sage-soft);
+		border-radius: var(--radius-full);
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: var(--color-brand-sage);
+		border-radius: var(--radius-full);
+		border: 2px solid var(--color-brand-sage-soft);
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: var(--color-brand-sage-deep);
+	}
+
+	a,
+	button,
+	[role="button"] {
+		cursor:
+			url("https://cdn.cursors-4u.net/previews/mushroom-ab85cfc8-32.webp")
+				32 32,
+			pointer;
+	}
+
+	body {
+		cursor:
+			url("https://cdn.cursors-4u.net/previews/mushroom-ab85cfc8-32.webp")
+				32 32,
+			auto;
+		background-color: var(--color-canvas);
+		color: var(--color-ink-primary);
+		font-family: var(--font-body);
+		min-height: 100vh;
+		background-size: 200% 200%;
+		animation: breathe 12s ease-in-out infinite alternate;
+	}
+
+	@keyframes breathe {
+		0% {
+			background-position: 0% 50%;
+			background-size: 200% 200%;
+		}
+		50% {
+			background-position: 100% 50%;
+			background-size: 150% 150%;
+		}
+		100% {
+			background-position: 50% 100%;
+			background-size: 200% 200%;
+		}
+	}
+}
+
+@layer utilities {
+	.copy-feedback.visible {
+		opacity: 1 !important;
+		transform: translate(-50%, -5px) !important;
+	}
+}

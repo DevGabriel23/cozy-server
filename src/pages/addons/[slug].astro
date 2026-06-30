@@ -1,0 +1,293 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+	const addons = await getCollection("addons");
+	return addons.map((addon) => ({
+		params: { slug: addon.id },
+		props: { addon },
+	}));
+}
+
+const { addon } = Astro.props;
+const { Content } = await render(addon);
+
+const bgColors = ["8A9A5B", "D4A373", "DCE3C8", "E8D3D0"];
+const textColors = ["FAF6F0", "4A4036"];
+const uriEncodedTitle = encodeURIComponent(addon.data.title);
+const bgColorIndex = Math.floor(Math.random() * bgColors.length);
+const textColorIndex = Math.floor(Math.random() * textColors.length);
+const fallbackImage = `https://placehold.co/600x400/${bgColors[bgColorIndex]}/${textColors[textColorIndex]}?text=${uriEncodedTitle}`;
+
+const finalImage = addon.data.mainImage
+	? `/images/${addon.data.mainImage}`
+	: fallbackImage;
+
+const allAddons = (await getCollection("addons")).filter(
+	(a) => a.id !== addon.id,
+);
+---
+
+<Layout
+	title={`${addon.data.title} - Cozy Server`}
+	description={addon.data.description}
+>
+	<div class="addon-detail">
+		<header class="addon-header">
+			<a href="/" class="back-link">&larr; Volver</a>
+			<span class="badge">{addon.data.type}</span>
+			<h1>{addon.data.title}</h1>
+			{
+				addon.data.creatorLink ? (
+					<p class="creator group">
+						por{" "}
+						<a
+							href={addon.data.creatorLink}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="font-bold group-hover:underline group-hover:text-brand-sage-deep transition-colors duration-300"
+						>
+							{addon.data.creator}
+						</a>
+					</p>
+				) : (
+					<p class="creator">
+						por <span class="font-bold">{addon.data.creator}</span>
+					</p>
+				)
+			}
+		</header>
+
+		{
+			addon.data.youtubeLink ? (
+				<div class="media-frame">
+					<iframe
+						src={`https://www.youtube.com/embed/${addon.data.youtubeLink}`}
+						title={addon.data.title}
+						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+						allowfullscreen
+					/>
+				</div>
+			) : (
+				<div class="media-frame">
+					<img src={finalImage} alt={addon.data.title} />
+				</div>
+			)
+		}
+
+		<div class="content-body">
+			<Content />
+		</div>
+
+		<footer class="explore-more">
+			<h2>Explora más</h2>
+			<div class="explore-grid">
+				{
+					allAddons.map((a) => {
+						const uriEncodedTitle = encodeURIComponent(
+							a.data.title,
+						);
+						const bgColorIndex = Math.floor(
+							Math.random() * bgColors.length,
+						);
+						const textColorIndex = Math.floor(
+							Math.random() * textColors.length,
+						);
+						const fallbackImage = `https://placehold.co/600x400/${bgColors[bgColorIndex]}/${textColors[textColorIndex]}?text=${uriEncodedTitle}`;
+
+						const finalImage = a.data.mainImage
+							? `/images/${a.data.mainImage}`
+							: fallbackImage;
+
+						return (
+							<a href={`/addons/${a.id}`} class="explore-card">
+								<img src={finalImage} alt={a.data.title} />
+								<div class="explore-card-info">
+									<h3>{a.data.title}</h3>
+									<p>{a.data.description}</p>
+								</div>
+							</a>
+						);
+					})
+				}
+			</div>
+		</footer>
+	</div>
+</Layout>
+
+<style is:global>
+	.addon-detail {
+		max-width: 720px;
+		margin: 0 auto;
+		padding: 24px 16px 48px;
+	}
+
+	.addon-header {
+		margin-bottom: 32px;
+	}
+
+	.back-link {
+		display: inline-block;
+		color: var(--color-brand-sage);
+		text-decoration: none;
+		font-family: var(--font-body);
+		font-weight: 500;
+		margin-bottom: 16px;
+		transition: transform 0.3s ease;
+	}
+
+	.back-link:hover {
+		transform: translateX(-4px);
+	}
+
+	.badge {
+		display: inline-block;
+		background-color: var(--color-brand-sage-soft);
+		color: var(--color-brand-sage-deep);
+		font-family: var(--font-body);
+		font-size: 0.875rem;
+		font-weight: 500;
+		padding: 4px 12px;
+		border-radius: 9999px;
+		margin-bottom: 12px;
+	}
+
+	.addon-header h1 {
+		font-family: var(--font-heading);
+		font-size: 2.5rem;
+		font-weight: 600;
+		line-height: 1.2;
+		color: var(--color-ink-primary);
+		margin: 0 0 8px;
+	}
+
+	.creator {
+		font-family: var(--font-body);
+		font-size: 1rem;
+		color: var(--color-ink-secondary);
+		margin: 0;
+	}
+
+	.media-frame {
+		border-radius: 24px;
+		overflow: hidden;
+		box-shadow: 0 8px 30px rgba(74, 64, 54, 0.06);
+		margin-bottom: 32px;
+		background-color: var(--color-surface);
+	}
+
+	.media-frame iframe {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border: none;
+		display: block;
+	}
+
+	.media-frame img {
+		width: 100%;
+		display: block;
+	}
+
+	.content-body {
+		margin-bottom: 48px;
+	}
+
+	.content-body ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.content-body li {
+		position: relative;
+		padding-left: 28px;
+		font-family: var(--font-body);
+		font-size: 1rem;
+		line-height: 1.6;
+		color: var(--color-ink-secondary);
+	}
+
+	.content-body li::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		top: 8px;
+		width: 10px;
+		height: 10px;
+		background-color: var(--color-brand-sage);
+		border-radius: 50%;
+		flex-shrink: 0;
+	}
+
+	.explore-more {
+		border-top: 1px solid var(--color-hairline);
+		padding-top: 32px;
+	}
+
+	.explore-more h2 {
+		font-family: var(--font-heading);
+		font-size: 1.5rem;
+		font-weight: 500;
+		color: var(--color-ink-primary);
+		margin: 0 0 20px;
+	}
+
+	.explore-grid {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+
+	@media (min-width: 640px) {
+		.explore-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	.explore-card {
+		display: flex;
+		flex-direction: column;
+		background-color: var(--color-canvas);
+		border: 1px solid var(--color-hairline);
+		border-radius: 24px;
+		overflow: hidden;
+		box-shadow: 0 8px 30px rgba(74, 64, 54, 0.06);
+		text-decoration: none;
+		transition: all 0.3s ease;
+	}
+
+	.explore-card:hover {
+		box-shadow: 0 12px 40px rgba(74, 64, 54, 0.12);
+		transform: translateY(-4px);
+	}
+
+	.explore-card img {
+		width: 100%;
+		aspect-ratio: 16 / 10;
+		object-fit: cover;
+		display: block;
+	}
+
+	.explore-card-info {
+		padding: 16px;
+	}
+
+	.explore-card-info h3 {
+		font-family: var(--font-heading);
+		font-size: 1.125rem;
+		font-weight: 500;
+		color: var(--color-ink-primary);
+		margin: 0 0 4px;
+	}
+
+	.explore-card-info p {
+		font-family: var(--font-body);
+		font-size: 0.875rem;
+		color: var(--color-ink-secondary);
+		margin: 0;
+	}
+</style>

@@ -1,0 +1,184 @@
+---
+// src/components/Hero.astro
+
+const connectionInfo = [
+	{ label: "IP", value: "cozy.grupogarpe.com", aria: "Copiar IP" },
+	{ label: "Puerto", value: "25012", aria: "Copiar Puerto" },
+];
+---
+
+<section
+	class="relative flex flex-col items-center justify-center text-center pt-24 pb-28 px-4 overflow-hidden"
+>
+	<div class="absolute inset-0 z-0 pointer-events-none">
+		<img
+			src="/images/hero-bg.jpg"
+			alt="Paisaje de atardecer en Cozy"
+			class="w-full h-full object-cover object-center"
+		/>
+
+		<div
+			class="absolute inset-0 bg-linear-to-b from-canvas/50 via-canvas/65 to-canvas"
+		>
+		</div>
+	</div>
+
+	<div class="relative z-10 flex flex-col items-center justify-center w-full">
+		<div class="flex flex-col items-center justify-center gap-4 mb-8">
+			<img
+				src="/images/cozy-server-icon.png"
+				alt="Icono del servidor Cozy"
+				class="w-24 h-24 md:w-32 md:h-32 object-cover rounded-(--radius-cozy-lg) shadow-(--shadows-soft) hover:shadow-(--shadows-hover) hover:-translate-y-2 transition-all duration-300 ease-in-out"
+			/>
+			<h1
+				class="text-5xl md:text-7xl font-heading text-(--cozy-ink-primary) font-bold tracking-tight drop-shadow-sm"
+			>
+				Cozy
+			</h1>
+
+			<p
+				class="text-lg md:text-xl text-(--cozy-ink-secondary) font-medium max-w-2xl mx-auto font-body drop-shadow-sm"
+			>
+				El primer servidor privado de Minecraft Bedrock con un mundo
+				aesthetic, acogedor y lleno de magia.
+			</p>
+		</div>
+
+		<!-- Tus cajas limpias -->
+		<div class="flex flex-col gap-4 w-full max-w-md mx-auto">
+			{
+				connectionInfo.map((info) => (
+					<div class="flex items-center justify-between gap-3 w-full bg-surface/80 backdrop-blur-md p-4 md:p-5 rounded-md border-2 border-dashed border-hairline hover:border-brand-sage transition-colors duration-300 shadow-sm group">
+						<div class="flex items-center gap-4 flex-1 overflow-hidden">
+							<span class="font-body text-xs md:text-sm font-bold uppercase tracking-wider text-ink-muted shrink-0 w-16 text-left">
+								{info.label}
+							</span>
+							<code class="font-code text-ink-primary text-base md:text-lg font-medium tracking-wide truncate">
+								{info.value}
+							</code>
+						</div>
+
+						<button
+							class="copy-btn relative bg-transparent text-brand-sage p-2.5 flex items-center justify-center rounded-lg transition-all duration-300 shrink-0 hover:bg-brand-sage-soft hover:text-brand-sage-deep"
+							data-copy={info.value}
+							aria-label={info.aria}
+						>
+							<svg
+								width="24"
+								height="24"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
+								<rect
+									x="9"
+									y="9"
+									width="13"
+									height="13"
+									rx="2"
+									ry="2"
+								/>
+								<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+							</svg>
+							<span class="copy-feedback absolute -top-10 left-1/2 transform -translate-x-1/2 bg-brand-sage text-on-dark text-xs font-bold py-1.5 px-3 rounded-full opacity-0 pointer-events-none transition-all duration-300 whitespace-nowrap">
+								¡Copiado!
+							</span>
+						</button>
+					</div>
+				))
+			}
+		</div>
+
+		<div
+			class="mt-8 flex flex-wrap items-center justify-center gap-2 text-sm font-body text-(--cozy-ink-primary) font-semibold bg-cozy-surface/70 backdrop-blur-md px-5 py-2.5 rounded-full shadow-sm border border-cozy-hairline"
+		>
+			<span class="flex items-center gap-1"> Abre Bedrock</span>
+			<span class="opacity-40">→</span>
+			<span>Pestaña Servidores</span>
+			<span class="opacity-40">→</span>
+			<span
+				class="text-cozy-ink-secondary bg-canvas border border-cozy-hairline px-2.5 py-1 rounded-md shadow-sm"
+				>Añadir servidor</span
+			>
+		</div>
+	</div>
+</section>
+
+<script>
+	console.log(
+		"🌸 Cozy Script: Inicializando escuchadores para los botones de copia...",
+	);
+
+	document.querySelectorAll(".copy-btn").forEach((btn) => {
+		btn.addEventListener("click", async () => {
+			const text = btn.getAttribute("data-copy");
+			const label = btn.getAttribute("aria-label") || "Dato";
+
+			console.log(
+				`[Click] %c${label}%c detectado. Intentando copiar: "${text}"`,
+				"color: #8A9A5B; font-weight: bold;",
+				"color: inherit;",
+			);
+
+			if (!text) {
+				console.warn(
+					"⚠️ Advertencia: El botón no tiene el atributo 'data-copy' o está vacío.",
+				);
+				return;
+			}
+
+			try {
+				await navigator.clipboard.writeText(text);
+				console.log(
+					`%c✓ Éxito:%c Texto copiado al portapapeles correctamente.`,
+					"color: #7CA982; font-weight: bold;",
+					"color: inherit;",
+				);
+
+				const feedback = btn.querySelector(".copy-feedback");
+				if (!feedback) {
+					console.error(
+						"❌ Error de UI: No se encontró el elemento '.copy-feedback' dentro del botón.",
+					);
+					return;
+				}
+
+				feedback.classList.add("visible");
+				console.log("✨ UI: Feedback visible activado por 2 segundos.");
+
+				setTimeout(() => {
+					feedback.classList.remove("visible");
+					console.log("✨ UI: Feedback ocultado.");
+				}, 2000);
+			} catch (err) {
+				console.error(
+					"❌ Error Crítico: Falló el uso de navigator.clipboard.writeText.",
+					err,
+				);
+
+				const feedback = btn.querySelector(".copy-feedback");
+				if (!feedback) {
+					console.error(
+						"❌ Error de UI (en bloque catch): No se encontró '.copy-feedback'.",
+					);
+					return;
+				}
+
+				feedback.textContent = "Error";
+				feedback.classList.add("visible");
+				console.log("✨ UI: Mostrando estado de Error en la interfaz.");
+
+				setTimeout(() => {
+					feedback.classList.remove("visible");
+					feedback.textContent = "¡Copiado!";
+					console.log(
+						"✨ UI: Feedback de error limpiado y reajustado a '¡Copiado!'.",
+					);
+				}, 2000);
+			}
+		});
+	});
+</script>
