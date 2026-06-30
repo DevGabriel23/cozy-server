@@ -1,4 +1,5 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
+import { z } from 'astro/zod';
 import { glob } from "astro/loaders";
 
 const addons = defineCollection({
@@ -9,7 +10,6 @@ const addons = defineCollection({
     creatorLink: z.string().optional(),
     type: z.enum(["Addon", "Texture Pack"]),
     description: z.string(),
-    mainImage: z.string(),
     youtubeLink: z.string().optional(),
   }),
 });

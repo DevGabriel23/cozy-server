@@ -1,0 +1,45 @@
+---
+interface Props {
+	item: any;
+	variant?: "grid" | "compact"; // Para decidir el nivel de detalle
+}
+const { item, variant = "grid" } = Astro.props;
+import { getAddonAssets } from "../utils/addonResolver";
+import { generateAddonImageFallback } from "../utils/imageUtils";
+
+const assets = getAddonAssets(item.id);
+const finalImage = assets.cover || generateAddonImageFallback(item);
+---
+
+<a
+	href={`/${item.collection}/${item.id}`}
+	class=`flex flex-col bg-canvas border border-hairline rounded-lg overflow-hidden shadow-[--shadow-soft] hover:shadow-[--shadow-hover] hover:-translate-y-1 transition-all duration-300 group ${variant === "compact" ? "w-64 md:w-72" : ""}`
+>
+	<img
+		src={finalImage}
+		alt={item.data.title}
+		class={`w-full object-cover aspect-video block group-hover:scale-105 transition-transform duration-500 ease-out`}
+	/>
+
+	<div
+		class={`p-6 flex-1 flex flex-col gap-2 relative z-10 bg-canvas ${variant === "compact" ? "p-4" : ""}`}
+	>
+		<span
+			class="inline-block self-start bg-brand-sage-soft text-brand-sage-deep font-body text-sm font-medium px-3 py-1 rounded-full"
+		>
+			{item.data.type}
+		</span>
+
+		<h3
+			class={`font-heading font-medium text-ink-primary ${variant === "grid" ? "text-2xl mt-1" : "text-lg mb-1"}`}
+		>
+			{item.data.title}
+		</h3>
+
+		<p
+			class={`font-body  text-ink-secondary leading-relaxed line-clamp-3 ${variant === "grid" ? "text-base" : "text-sm"}`}
+		>
+			{item.data.description}
+		</p>
+	</div>
+</a>

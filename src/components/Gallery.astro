@@ -1,0 +1,185 @@
+---
+interface Props {
+	images: string[];
+}
+const { images } = Astro.props;
+const showLimit = 6;
+const hasMore = images.length > showLimit;
+const initialImages = images.slice(0, showLimit);
+const hiddenImages = images.slice(showLimit);
+---
+
+<div id="gallery-component" data-images={JSON.stringify(images)} class="my-8">
+	<div
+		id="gallery-container"
+		class="grid grid-cols-2 md:grid-cols-3 gap-4 my-8"
+	>
+		{
+			initialImages.map((src, index) => (
+				<button
+					onclick={`openModal(${index})`}
+					class="aspect-square rounded-2xl overflow-hidden shadow-soft hover:scale-105 transition-transform"
+				>
+					<img src={src} class="w-full h-full object-cover" />
+				</button>
+			))
+		}
+
+		{
+			hiddenImages.map((src, index) => (
+				<button
+					onclick={`openModal(${index + showLimit})`}
+					class="hidden-gallery-item hidden aspect-square rounded-2xl overflow-hidden shadow-soft hover:scale-105 transition-transform"
+				>
+					<img src={src} class="w-full h-full object-cover" />
+				</button>
+			))
+		}
+	</div>
+
+	{
+		hasMore && (
+			<button
+				id="view-more-btn"
+				data-hidden-count={hiddenImages.length}
+				onclick="expandGallery()"
+				class="mt-6 w-full text-center text-ink-secondary font-body font-medium hover:text-brand-sage-deep hover:underline underline-offset-4 transition-all duration-300"
+			>
+				Ver más fotos ({hiddenImages.length} disponibles)
+			</button>
+		)
+	}
+</div>
+
+<div
+	id="gallery-modal"
+	class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-4 cursor-zoom-out"
+>
+	<div
+		id="modal-container"
+		class="relative w-full max-w-4xl flex flex-col items-center p-6 rounded-3xl"
+	>
+		<button
+			id="close-modal-btn"
+			class="absolute -top-12 right-0 text-white text-4xl">&times;</button
+		>
+		<img
+			id="modal-main-img"
+			src=""
+			class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
+		/>
+
+		<img
+			id="modal-main-img"
+			src=""
+			class="max-w-full max-h-[70vh] object-contain rounded-lg shadow-2xl"
+		/>
+
+		<div
+			id="thumbnail-container"
+			class="w-full max-w-2xl overflow-x-auto flex gap-3 p-4 mt-6 border-t border-white/20"
+		>
+			{
+				images.map((src, index) => (
+					<button
+						onclick={`showImage(${index})`}
+						data-index={index}
+						class="thumb-btn w-20 h-20 shrink-0 rounded-lg overflow-hidden border-2 border-transparent hover:border-brand-sage transition-all"
+					>
+						<img src={src} class="w-full h-full object-cover" />
+					</button>
+				))
+			}
+		</div>
+	</div>
+</div>
+
+<script is:inline>
+	function initGallery() {
+		const container = document.getElementById("gallery-component");
+		if (!container) return; // Si no estamos en la página del addon, salimos
+
+		const modal = document.getElementById("gallery-modal");
+		const closeBtn = document.getElementById("close-modal-btn");
+		const modalContainer = document.getElementById("modal-container");
+
+		const allImages = JSON.parse(container.dataset.images || "[]");
+		const mainImg = document.getElementById("modal-main-img");
+		let galleryExpanded = false;
+
+		// Exponemos las funciones al objeto window para que los onclick funcionen
+		window.openModal = function (index) {
+			modal.classList.remove("hidden");
+			showImage(index);
+			document.body.style.overflow = "hidden";
+		};
+
+		window.showImage = function (index) {
+			const mainImg = document.getElementById("modal-main-img");
+			const container = document.getElementById("gallery-component");
+			const allImages = JSON.parse(container.dataset.images || "[]");
+
+			// Cambiar la imagen principal
+			if (mainImg) mainImg.src = allImages[index];
+
+			// Lógica para resaltar la miniatura activa
+			const allThumbs = document.querySelectorAll(".thumb-btn");
+			allThumbs.forEach((btn, idx) => {
+				if (idx === index) {
+					btn.classList.add("border-white"); // Borde activo
+					btn.classList.remove("border-transparent");
+					btn.classList.add("opacity-100");
+					btn.classList.remove("opacity-50"); // Opcional: hacer las otras más oscuras
+				} else {
+					btn.classList.remove("border-white");
+					btn.classList.add("border-transparent");
+					btn.classList.add("opacity-50"); // Las inactivas se ven un poco más tenues
+				}
+			});
+		};
+
+		const closeModal = () => {
+			modal.classList.add("hidden");
+			document.body.style.overflow = "auto";
+		};
+
+		// 1. Cerrar al hacer clic en el fondo oscuro
+		modal.addEventListener("click", (e) => {
+			if (e.target === modal) closeModal();
+		});
+
+		// 2. Cerrar con botón X
+		closeBtn.addEventListener("click", closeModal);
+
+		window.expandGallery = function () {
+			const items = document.querySelectorAll(".hidden-gallery-item");
+			const viewMoreBtn = document.getElementById("view-more-btn");
+			const hiddenCount = viewMoreBtn.dataset.hiddenCount;
+
+			if (galleryExpanded) {
+				items.forEach((item) => item.classList.add("hidden"));
+				viewMoreBtn.textContent = `Ver más fotos (${hiddenCount} disponibles)`;
+				galleryExpanded = false;
+			} else {
+				items.forEach((item) => item.classList.remove("hidden"));
+				viewMoreBtn.textContent = "Ver menos fotos";
+				galleryExpanded = true;
+			}
+		};
+	}
+
+	document.addEventListener("keydown", (e) => {
+		if (e.key === "Escape") window.closeModal();
+	});
+
+	// Ejecución en carga inicial y en cada navegación de View Transitions
+	document.addEventListener("astro:page-load", initGallery);
+	if (
+		document.readyState === "complete" ||
+		document.readyState === "interactive"
+	) {
+		initGallery();
+	} else {
+		document.addEventListener("DOMContentLoaded", initGallery);
+	}
+</script>

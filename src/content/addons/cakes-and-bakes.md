@@ -4,7 +4,6 @@ creator: "Some Game Studio"
 creatorLink: "https://www.minecraft.net/en-us/marketplace/creator/some-game-studio"
 type: "Addon"
 description: "¡Vive el sueño de tener tu propia panadería! Amplía tu granja y prepara deliciosos dulces."
-mainImage: "cakes-and-bakes-cover.jpg"
 youtubeLink: "oG1aEj0qGHY"
 ---
 

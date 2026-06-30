@@ -4,7 +4,6 @@ creator: "Oreville Studios"
 creatorLink: "https://www.minecraft.net/es-es/marketplace/creator/oreville-studios"
 type: "Texture Pack"
 description: "El paquete de animación que no sabías que necesitabas: ¡Dale vida a tu mundo con nuevas animaciones, partículas, texturas y más!"
-mainImage: "action-and-stuff-cover.jpg"
 youtubeLink: "VDk8niB2Obw?si=OnENBerDOTUxizx7"
 ---
 El paquete de animación que no sabías que necesitabas: ¡Dale vida a tu mundo con nuevas animaciones, partículas, texturas y más!

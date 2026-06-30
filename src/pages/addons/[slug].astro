@@ -1,8 +1,10 @@
 ---
-import ExploreCard from "../../components/ExploreCard.astro";
 import Layout from "../../layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
-import { getAddonImageUrl } from "../../utils/imageUtils";
+import { generateAddonImageFallback } from "../../utils/imageUtils";
+import AddonCard from "../../components/AddonCard.astro";
+import Gallery from "../../components/Gallery.astro";
+import { getAddonAssets } from "../../utils/addonResolver";
 
 export async function getStaticPaths() {
 	const addons = await getCollection("addons");
@@ -15,7 +17,7 @@ export async function getStaticPaths() {
 const { addon } = Astro.props;
 const { Content } = await render(addon);
 
-const finalImage = getAddonImageUrl(addon);
+const assets = getAddonAssets(addon.id);
 
 const allAddons = (await getCollection("addons")).filter(
 	(a) => a.id !== addon.id,
@@ -81,7 +83,7 @@ const allAddons = (await getCollection("addons")).filter(
 				</div>
 			) : (
 				<div class="media-frame">
-					<img src={finalImage} alt={addon.data.title} />
+					<img src={assets.cover} alt={addon.data.title} />
 				</div>
 			)
 		}
@@ -89,6 +91,11 @@ const allAddons = (await getCollection("addons")).filter(
 		<div class="content-body space-y-4">
 			<Content />
 		</div>
+
+		{assets.gallery && (
+            <h2 class="font-heading text-2xl text-ink-primary mb-6">Galería</h2>
+            <Gallery images={assets.gallery}/>
+        )}
 
 		<div class="border-t border-hairline pt-8">
 			<h2 class="font-heading text-2xl font-medium text-ink-primary mb-6">
@@ -99,16 +106,9 @@ const allAddons = (await getCollection("addons")).filter(
 			>
 				{
 					allAddons.map((a) => {
-						const imageUrl = getAddonImageUrl(a);
-
 						return (
 							<div class="snap-start">
-								<ExploreCard
-									title={a.data.title}
-									description={a.data.description}
-									image={imageUrl}
-									href={`/addons/${a.id}`}
-								/>
+								<AddonCard item={a} variant="compact" />
 							</div>
 						);
 					})
