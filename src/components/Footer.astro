@@ -1,0 +1,51 @@
+---
+// src/components/Footer.astro
+---
+
+<footer
+	class="bg-surface border-t border-hairline py-12 mt-12 relative overflow-hidden"
+>
+	<div class="absolute inset-0 z-0 pointer-events-none">
+		<img
+			src="/images/hero-bg.jpg"
+			alt="Paisaje de pasto y flores"
+			class="w-full h-full object-cover object-bottom opacity-50"
+		/>
+		<div
+			class="absolute inset-0 bg-linear-to-t from-transparent via-surface/75 to-surface"
+		>
+		</div>
+	</div>
+	<div class="relative z-10 max-w-4xl mx-auto px-6 text-center">
+		<div class="flex flex-col items-center justify-center gap-4 mb-8">
+			<img
+				src="/images/cozy-server-icon.png"
+				alt="Icono del servidor Cozy"
+				class="w-16 h-16 object-cover rounded-lg shadow-(--shadows-soft) hover:shadow-(--shadows-hover) hover:-translate-y-2 transition-all duration-300 ease-in-out"
+			/>
+			<p class="font-heading text-xl text-ink-primary font-bold">Cozy</p>
+		</div>
+
+		<nav
+			class="justify-center gap-6 text-ink-primary font-body font-medium bg-canvas/50 py-2 px-6 rounded-full inline-flex"
+		>
+			<a href="/rules" class="hover:text-brand-sage transition-colors"
+				>Reglas</a
+			>
+			<a
+				href="https://discordapp.com/users/611007205713379330"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="hover:text-brand-sage transition-colors">Discord</a
+			>
+			<a
+				href="mailto:gabrielramondev23@gmail.com"
+				class="hover:text-brand-sage transition-colors">Contacto</a
+			>
+		</nav>
+
+		<p class="text-sm text-ink-primary font-body mt-6">
+			© {new Date().getFullYear()} Creado con ❤️ para la comunidad.
+		</p>
+	</div>
+</footer>

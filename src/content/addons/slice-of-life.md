@@ -1,11 +1,13 @@
 ---
 title: "Slice of Life"
-creator: "Team"
+creator: "Starfish Studio"
+creatorLink: "https://www.minecraft.net/en-us/marketplace/creator/starfish-studios"
 type: "Addon"
 description: "Crea el hogar más acogedor con muebles encantadores, un jardín vibrante y mascotas adorables."
-mainImage: ""
-youtubeLink: ""
+mainImage: "slice-of-life-cover.jpg"
+youtubeLink: "lkzOoRPDXU0"
 ---
+¡Vive cada momento de la vida! Crea el hogar más acogedor con muebles encantadores, un jardín vibrante y mascotas adorables. Acurrúcate con tu Shiba Inu, hornea deliciosos postres y disfruta de picnics.
 
 - Decoración de anime, peluches y gacha
 - Muebles adorables y bloques de construcción

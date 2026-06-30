@@ -1,0 +1,23 @@
+---
+// src/components/ExploreCard.astro
+interface Props {
+	title: string;
+	description: string;
+	image: string;
+	href: string;
+}
+const { title, description, image, href } = Astro.props;
+---
+
+<a
+	href={href}
+	class="group flex flex-col bg-canvas border border-hairline rounded-[24px] overflow-hidden shadow-soft transition-all duration-300 hover:shadow-hover hover:-translate-y-1 shrink-0 w-64 md:w-72"
+>
+	<img src={image} alt={title} class="w-full aspect-16/10 object-cover" />
+	<div class="p-4">
+		<h3 class="font-heading text-lg font-medium text-ink-primary mb-1">
+			{title}
+		</h3>
+		<p class="font-body text-sm text-ink-secondary">{description}</p>
+	</div>
+</a>

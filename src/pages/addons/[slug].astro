@@ -1,6 +1,8 @@
 ---
+import ExploreCard from "../../components/ExploreCard.astro";
 import Layout from "../../layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
+import { getAddonImageUrl } from "../../utils/imageUtils";
 
 export async function getStaticPaths() {
 	const addons = await getCollection("addons");
@@ -13,16 +15,7 @@ export async function getStaticPaths() {
 const { addon } = Astro.props;
 const { Content } = await render(addon);
 
-const bgColors = ["8A9A5B", "D4A373", "DCE3C8", "E8D3D0"];
-const textColors = ["FAF6F0", "4A4036"];
-const uriEncodedTitle = encodeURIComponent(addon.data.title);
-const bgColorIndex = Math.floor(Math.random() * bgColors.length);
-const textColorIndex = Math.floor(Math.random() * textColors.length);
-const fallbackImage = `https://placehold.co/600x400/${bgColors[bgColorIndex]}/${textColors[textColorIndex]}?text=${uriEncodedTitle}`;
-
-const finalImage = addon.data.mainImage
-	? `/images/${addon.data.mainImage}`
-	: fallbackImage;
+const finalImage = getAddonImageUrl(addon);
 
 const allAddons = (await getCollection("addons")).filter(
 	(a) => a.id !== addon.id,
@@ -34,10 +27,27 @@ const allAddons = (await getCollection("addons")).filter(
 	description={addon.data.description}
 >
 	<div class="addon-detail">
-		<header class="addon-header">
-			<a href="/" class="back-link">&larr; Volver</a>
-			<span class="badge">{addon.data.type}</span>
-			<h1>{addon.data.title}</h1>
+		<header class="addon-header mb-8">
+			<nav class="mb-4">
+				<a
+					href="/"
+					class="text-brand-sage-deep font-medium flex items-center gap-1 hover:underline"
+				>
+					<span>&larr;</span> Volver al inicio
+				</a>
+			</nav>
+
+			<div class="flex items-center gap-3 mb-4">
+				<span
+					class="badge bg-brand-sage-soft text-brand-sage-deep px-3 py-1 rounded-full text-sm"
+				>
+					{addon.data.type}
+				</span>
+			</div>
+			<h1 class="text-4xl md:text-5xl font-heading text-ink-primary mb-2">
+				{addon.data.title}
+			</h1>
+
 			{
 				addon.data.creatorLink ? (
 					<p class="creator group">
@@ -76,43 +86,35 @@ const allAddons = (await getCollection("addons")).filter(
 			)
 		}
 
-		<div class="content-body">
+		<div class="content-body space-y-4">
 			<Content />
 		</div>
 
-		<footer class="explore-more">
-			<h2>Explora más</h2>
-			<div class="explore-grid">
+		<div class="border-t border-hairline pt-8">
+			<h2 class="font-heading text-2xl font-medium text-ink-primary mb-6">
+				Explora más
+			</h2>
+			<div
+				class="flex gap-4 overflow-x-auto pb-6 scrollbar-thin scrollbar-thumb-brand-sage scrollbar-track-brand-sage-soft snap-x"
+			>
 				{
 					allAddons.map((a) => {
-						const uriEncodedTitle = encodeURIComponent(
-							a.data.title,
-						);
-						const bgColorIndex = Math.floor(
-							Math.random() * bgColors.length,
-						);
-						const textColorIndex = Math.floor(
-							Math.random() * textColors.length,
-						);
-						const fallbackImage = `https://placehold.co/600x400/${bgColors[bgColorIndex]}/${textColors[textColorIndex]}?text=${uriEncodedTitle}`;
-
-						const finalImage = a.data.mainImage
-							? `/images/${a.data.mainImage}`
-							: fallbackImage;
+						const imageUrl = getAddonImageUrl(a);
 
 						return (
-							<a href={`/addons/${a.id}`} class="explore-card">
-								<img src={finalImage} alt={a.data.title} />
-								<div class="explore-card-info">
-									<h3>{a.data.title}</h3>
-									<p>{a.data.description}</p>
-								</div>
-							</a>
+							<div class="snap-start">
+								<ExploreCard
+									title={a.data.title}
+									description={a.data.description}
+									image={imageUrl}
+									href={`/addons/${a.id}`}
+								/>
+							</div>
 						);
 					})
 				}
 			</div>
-		</footer>
+		</div>
 	</div>
 </Layout>
 
@@ -204,21 +206,22 @@ const allAddons = (await getCollection("addons")).filter(
 
 	.content-body li {
 		position: relative;
-		padding-left: 28px;
+		padding-left: 2rem;
 		font-family: var(--font-body);
 		font-size: 1rem;
 		line-height: 1.6;
-		color: var(--color-ink-secondary);
+		color: var(--color-ink-primary);
+		font-weight: 450;
 	}
 
 	.content-body li::before {
 		content: "";
 		position: absolute;
 		left: 0;
-		top: 8px;
-		width: 10px;
-		height: 10px;
-		background-color: var(--color-brand-sage);
+		background-color: var(--color-brand-sage-deep);
+		width: 8px;
+		height: 8px;
+		top: 10px;
 		border-radius: 50%;
 		flex-shrink: 0;
 	}

@@ -87,6 +87,16 @@
 		animation: breathe 12s ease-in-out infinite alternate;
 	}
 
+	.content-body ul {
+		@apply flex flex-col gap-3;
+	}
+	.content-body li {
+		@apply relative pl-8 font-body text-ink-primary;
+	}
+	.content-body li::before {
+		@apply absolute left-0 top-2.5 w-2 h-2 rounded-full bg-brand-sage-deep content-[''];
+	}
+
 	@keyframes breathe {
 		0% {
 			background-position: 0% 50%;

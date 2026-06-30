@@ -1,40 +1,46 @@
 ---
+import Footer from "../components/Footer.astro";
 import "../styles/global.css";
 import { ClientRouter } from "astro:transitions";
 
 interface Props {
-  title?: string;
-  description?: string;
-  image?: string;
+	title?: string;
+	description?: string;
+	image?: string;
 }
 
-const { title = "Cozy Server", description = "Un servidor privado de Minecraft Bedrock con un toque aesthetic y acogedor", image = "/favicon.svg" } = Astro.props;
+const {
+	title = "Cozy Server",
+	description = "Un servidor privado de Minecraft Bedrock con un toque aesthetic y acogedor",
+	image = "/favicon.svg",
+} = Astro.props;
 
 const canonicalURL = new URL(
-  Astro.url.pathname,
-  Astro.site || "https://cozy-server.grupogarpe.com",
+	Astro.url.pathname,
+	Astro.site || "https://cozy-server.grupogarpe.com",
 );
 ---
 
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={image} />
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={image} />
 
-    <link rel="canonical" href={canonicalURL} />
-    <ClientRouter />
-  </head>
-  <body>
-    <main>
-      <slot />
-    </main>
-  </body>
+		<link rel="canonical" href={canonicalURL} />
+		<ClientRouter />
+	</head>
+	<body>
+		<main>
+			<slot />
+		</main>
+		<Footer />
+	</body>
 </html>
