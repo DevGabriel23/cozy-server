@@ -8,6 +8,7 @@ const connectionInfo = [
 ---
 
 <section
+	id="hero"
 	class="relative flex flex-col items-center justify-center text-center pt-24 pb-28 px-4 overflow-hidden"
 >
 	<div class="absolute inset-0 z-0 pointer-events-none">
@@ -108,9 +109,7 @@ const connectionInfo = [
 </section>
 
 <script>
-	console.log(
-		"🌸 Cozy Script: Inicializando escuchadores para los botones de copia...",
-	);
+
 
 	document.querySelectorAll(".copy-btn").forEach((btn) => {
 		btn.addEventListener("click", async () => {

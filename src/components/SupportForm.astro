@@ -1,0 +1,169 @@
+---
+// src/components/SupportForm.astro
+---
+
+<form
+	id="report-form"
+	class="space-y-4 max-w-lg mx-auto bg-surface p-8 rounded-[32px] border border-hairline"
+>
+	<h3 class="font-heading text-2xl text-ink-primary">Nuevo Reporte</h3>
+
+	<select
+		id="report-type"
+		class="w-full p-3 rounded-xl border border-hairline"
+	>
+		<option value="BUG">⚠️ Reporte de Bug</option>
+		<option value="SUG">💡 Sugerencia</option>
+		<option value="USER">🚫 Reporte de Usuario</option>
+	</select>
+
+	<!-- Campos Dinámicos -->
+	<div id="dynamic-fields" class="space-y-4">
+		<!-- Estos se inyectan por JS según la selección -->
+	</div>
+
+	<button
+		type="submit"
+		class="w-full bg-brand-sage text-on-dark py-3 rounded-full font-medium hover:bg-brand-sage-deep transition-all"
+	>
+		Enviar a WhatsApp
+	</button>
+</form>
+
+<script is:inline>
+	function initSupportForm() {
+		console.log("🌸 Cozy Script: Iniciando formulario de soporte...");
+
+		const form = document.getElementById("report-form");
+		const select = document.getElementById("report-type");
+		const dynamicFields = document.getElementById("dynamic-fields");
+
+		if (!form || !select || !dynamicFields) {
+			console.error(
+				"❌ Cozy Script: No se encontraron elementos del formulario. ¿Estás en la página correcta?",
+			);
+			return;
+		}
+
+		console.log(
+			"✅ Cozy Script: Elementos encontrados, configurando listeners.",
+		);
+
+		const createToggle = (name, label, options) => `
+            <div class="flex items-center justify-between p-2">
+                <span class="text-ink-secondary text-sm">${label}</span>
+                <div class="flex bg-surface-dark rounded-full p-1 border border-hairline toggle-group">
+                    ${options
+						.map(
+							(opt, i) => `
+                        <input type="radio" id="${name}-${i}" name="${name}" value="${opt.value}" ${opt.checked ? "checked" : ""} class="sr-only" />
+                        <label for="${name}-${i}" class="px-4 py-1 rounded-full cursor-pointer transition-all text-sm toggle-label ${opt.checked ? "bg-brand-sage text-white" : ""}">
+                            ${opt.label}
+                        </label>
+                    `,
+						)
+						.join("")}
+                </div>
+            </div>
+        `;
+
+		const templates = {
+			BUG: `
+            <input type="text" name="jugador" placeholder="Nombre en MC" required class="w-full p-3 rounded-xl border border-hairline" />
+            <input type="text" name="ocurrio" placeholder="¿Qué ocurrió?" required class="w-full p-3 rounded-xl border border-hairline" />
+            <input type="text" name="ubicacion" placeholder="Coordenadas" class="w-full p-3 rounded-xl border border-hairline" />
+            ${createToggle("reproducible", "¿Reproducible?", [
+				{ label: "No", value: "No" },
+				{ label: "Sí", value: "Si", checked: true },
+			])}
+            <textarea name="info" placeholder="Información adicional..." class="w-full p-3 rounded-xl border border-hairline"></textarea>`,
+			SUG: `
+            <input type="text" name="idea" placeholder="Idea breve" required class="w-full p-3 rounded-xl border border-hairline" />
+            <input type="text" name="beneficio" placeholder="¿Cómo beneficiaría al servidor?" required class="w-full p-3 rounded-xl border border-hairline" />
+            <textarea name="detalles" placeholder="Detalles de tu idea..." class="w-full p-3 rounded-xl border border-hairline h-24"></textarea>
+            ${createToggle("urgente", "¿Es urgente?", [
+				{ label: "No", value: "No", checked: true },
+				{ label: "Sí", value: "Si" },
+			])}`,
+			USER: `
+            <input type="text" name="acusado" placeholder="Nombre del usuario reportado" required class="w-full p-3 rounded-xl border border-hairline" />
+            <input type="text" name="fecha" placeholder="Fecha y hora aprox" required class="w-full p-3 rounded-xl border border-hairline" />
+            <input type="text" name="falta" placeholder="Falta cometida (Ej: Griefing)" required class="w-full p-3 rounded-xl border border-hairline" />
+            <textarea name="descripcion" placeholder="Descripción de lo sucedido..." class="w-full p-3 rounded-xl border border-hairline h-24"></textarea>`,
+		};
+
+		function updateFields() {
+			console.log(
+				"⚙️ Cozy Script: Actualizando campos para:",
+				select.value,
+			);
+			dynamicFields.innerHTML = "";
+			dynamicFields.innerHTML = templates[select.value];
+
+			// Buscamos todos los grupos de radio en el contenedor recién inyectado
+			const groups = dynamicFields.querySelectorAll(".toggle-group");
+
+			groups.forEach((group) => {
+				const labels = group.querySelectorAll(".toggle-label");
+				const radios = group.querySelectorAll('input[type="radio"]');
+
+				radios.forEach((radio, idx) => {
+					radio.addEventListener("change", () => {
+						// Limpiar todas las clases activas en este grupo
+						labels.forEach((l) =>
+							l.classList.remove("bg-brand-sage", "text-white"),
+						);
+						// Activar solo la seleccionada
+						labels[idx].classList.add(
+							"bg-brand-sage",
+							"text-white",
+						);
+					});
+				});
+			});
+		}
+
+		select.addEventListener("change", updateFields);
+		updateFields();
+
+		form.addEventListener("submit", function (e) {
+			e.preventDefault();
+			console.log("🚀 Cozy Script: Enviando formulario...");
+			const data = new FormData(form);
+			const type = select.value;
+
+			if (!type) {
+				console.error(
+					"❌ Cozy Script: No se seleccionó un tipo de reporte.",
+				);
+				return;
+			}
+			let message = "";
+
+			switch (type) {
+				case "BUG":
+					message = `*REPORTE DE BUG/ERROR*\n\n`;
+					break;
+				case "SUG":
+					message = `*SUGERENCIA PARA COZY*\n\n`;
+					break;
+				case "USER":
+					message = `*REPORTE DE USUARIO*\n\n`;
+					break;
+				default:
+					break;
+			}
+
+			// Iterar sobre los campos dinámicos
+			for (let [key, val] of data.entries()) {
+				if (key !== "report-type")
+					message += `*${key.toUpperCase()}:* ${val}\n`;
+			}
+
+			const whatsappUrl = `https://wa.me/527821063964?text=${encodeURIComponent(message)}`;
+			window.open(whatsappUrl, "_blank");
+		});
+	}
+
+	document.addEventListener("astro:page-load", initSupportForm);
+</script>

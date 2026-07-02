@@ -1,0 +1,141 @@
+---
+// src/components/NavBar.astro
+
+const navLinks = [
+	{ name: "Inicio", href: "/#hero" },
+	{ name: "Addons", href: "/#content" },
+	{ name: "Reglas", href: "/rules" },
+	// { name: "Galería", href: "/gallery" },
+	{ name: "Soporte", href: "/support" },
+];
+
+const whatsappLink =
+	"https://wa.me/527821063964?text=Quiero%20unirme%20al%20servidor%20Cozy%20Server%20y%20necesito%20la%20invitación%20al%20grupo%20de%20whatsapp";
+---
+
+<header
+	class="fixed top-4 inset-x-4 z-50 md:mx-auto md:max-w-7xl rounded-2xl border border-hairline bg-surface/80 backdrop-blur-md shadow-lg transition-all duration-300"
+>
+	<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+		<div class="flex justify-between items-center h-16">
+			<a href="/" class="flex items-center gap-3 group">
+				<div
+					class="w-10 h-10 rounded-[16px] bg-brand-sage-soft flex items-center justify-center shadow-inner transition-transform group-hover:-rotate-6"
+				>
+					<img
+						src="/images/cozy-server-icon.png"
+						alt="Icono del servidor Cozy"
+						class="w-6 h-6 object-cover rounded-(--radius-cozy-lg) shadow-(--shadows-soft) hover:shadow-(--shadows-hover) hover:-translate-y-2 transition-all duration-300 ease-in-out"
+					/>
+				</div>
+				<span
+					class="font-heading text-2xl font-bold text-ink-primary tracking-tight"
+					>Cozy Server</span
+				>
+			</a>
+
+			<nav class="hidden md:flex items-center gap-1">
+				{
+					navLinks.map((link) => (
+						<a
+							href={link.href}
+							class="px-4 py-2 rounded-full text-ink-secondary font-body font-medium hover:bg-brand-sage-soft hover:text-brand-sage-deep transition-colors duration-300"
+						>
+							{link.name}
+						</a>
+					))
+				}
+			</nav>
+
+			<div class="hidden md:flex">
+				<a
+					href={whatsappLink}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="bg-brand-sage text-on-dark px-6 py-2 rounded-full font-body font-medium shadow-soft hover:shadow-hover hover:-translate-y-0.5 transition-all duration-300"
+				>
+					Unirse al Whatsapp
+				</a>
+			</div>
+
+			<button
+				id="mobile-menu-button"
+				class="md:hidden p-2 rounded-lg text-ink-primary hover:bg-brand-sage-soft focus:outline-none focus:ring-2 focus:ring-brand-sage"
+				aria-label="Abrir menú"
+			>
+				<svg
+					class="w-6 h-6"
+					fill="none"
+					viewBox="0 0 24 24"
+					stroke="currentColor"
+				>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M4 6h16M4 12h16M4 18h16"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+
+	<div
+		id="mobile-menu"
+		class="md:hidden hidden border-t border-hairline bg-surface px-4 pt-2 pb-3 space-y-1 shadow-lg animate-fade-in"
+	>
+		{
+			navLinks.map((link) => (
+				<a
+					href={link.href}
+					class="block px-3 py-3 rounded-lg text-ink-secondary font-body font-medium text-center active:bg-brand-sage-soft active:text-brand-sage-deep"
+				>
+					{link.name}
+				</a>
+			))
+		}
+		<div class="pt-4 pb-2 border-t border-hairline">
+			<a
+				href={whatsappLink}
+				target="_blank"
+				class="block w-full text-center bg-brand-sage text-on-dark px-6 py-3 rounded-full font-body font-medium shadow-soft"
+			>
+				Unirse al Whatsapp
+			</a>
+		</div>
+	</div>
+</header>
+
+<script>
+	function initNavbar() {
+		const btn = document.getElementById("mobile-menu-button");
+		const menu = document.getElementById("mobile-menu");
+
+		// Función para cerrar el menú
+		const close = () => menu?.classList.add("hidden");
+
+		// 1. Alternar al hacer clic en el botón
+		btn?.addEventListener("click", () => menu?.classList.toggle("hidden"));
+
+		// 2. Cerrar si se hace clic en cualquier enlace dentro del menú
+		menu?.addEventListener("click", (e) => {
+			const target = e.target as HTMLElement;
+			if (target.tagName === "A") {
+				menu.classList.add("hidden");
+			}
+		});
+
+		// 3. Cerrar siempre al navegar a una nueva página (Astro View Transitions)
+		document.addEventListener("astro:after-swap", close);
+
+		window.addEventListener("scroll", () => {
+			const header = document.querySelector("header");
+			if (window.scrollY > 50) {
+				header?.classList.add("bg-surface/90", "scale-[0.98]");
+			} else {
+				header?.classList.remove("bg-surface/90", "scale-[0.98]");
+			}
+		});
+	}
+
+	document.addEventListener("astro:page-load", initNavbar);
+</script>

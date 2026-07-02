@@ -1,0 +1,47 @@
+---
+// src/pages/support.astro
+import Layout from "../layouts/Layout.astro";
+import SupportForm from "../components/SupportForm.astro";
+---
+
+<Layout
+	title="Centro de Soporte | Cozy Server"
+	description="¿Tienes un problema, una idea o quieres reportar un error? Estamos aquí para ayudarte a mantener la armonía en Cozy Server."
+>
+	<main class="max-w-xl mx-auto px-6 py-20 mt-8">
+		<!-- Encabezado con toque personal -->
+		<div class="text-center mb-12">
+			<h1 class="font-heading text-4xl text-ink-primary mb-4">
+				¿Necesitas ayuda?
+			</h1>
+			<p class="text-ink-secondary text-lg leading-relaxed">
+				Nuestra comunidad crece gracias a ti. Utiliza este formulario
+				para enviarnos un reporte directo a nuestro WhatsApp y lo
+				atenderemos con gusto.
+			</p>
+		</div>
+
+		<!-- Formulario con estilo elevado -->
+		<SupportForm />
+
+		<!-- Sección de ayuda adicional -->
+		<div
+			class="mt-12 p-6 bg-brand-sage-soft/30 rounded-2xl border border-brand-sage-soft"
+		>
+			<h4
+				class="font-heading text-lg font-bold text-brand-sage-deep mb-2"
+			>
+				¿Cómo funciona?
+			</h4>
+			<ul
+				class="text-ink-secondary text-sm space-y-2 list-disc list-inside"
+			>
+				<li>Selecciona el tipo de reporte.</li>
+				<li>Sé claro y breve en los detalles.</li>
+				<li>
+					Si tienes capturas, podrás adjuntarlas al abrirse WhatsApp.
+				</li>
+			</ul>
+		</div>
+	</main>
+</Layout>

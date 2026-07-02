@@ -44,6 +44,7 @@
 	html {
 		scrollbar-width: thin;
 		scrollbar-color: var(--color-brand-sage) var(--color-brand-sage-soft);
+		scroll-behavior: smooth;
 	}
 
 	::-webkit-scrollbar {
@@ -110,6 +111,10 @@
 			background-position: 50% 100%;
 			background-size: 200% 200%;
 		}
+	}
+
+	[id] {
+		scroll-margin-top: 5rem;
 	}
 }
 
