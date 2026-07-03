@@ -1,0 +1,42 @@
+---
+// src/pages/gallery.astro
+import GalleryPost from "../components/GalleryPost.astro";
+import Layout from "../layouts/Layout.astro";
+import { galleryPosts } from "../data/galleryPosts";
+---
+
+<Layout
+	title="Galería - Cozy Server"
+	description="Capturas y momentos especiales de nuestra comunidad en Cozy Server."
+>
+	<main class="max-w-6xl mx-auto px-6 py-20">
+		<header class="text-center mb-16 mt-8">
+			<h1 class="font-heading text-5xl text-ink-primary mb-6">
+				Momentos Cozy
+			</h1>
+			<p class="text-ink-secondary text-lg max-w-2xl mx-auto">
+				Una pequeña selección de los recuerdos más bonitos compartidos
+				por nuestra comunidad. ¿Tienes una captura épica? ¡Compártela en
+				nuestro Discord!
+			</p>
+		</header>
+
+		{
+			galleryPosts.length > 0 ? (
+				<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+					{galleryPosts.map((post) => (
+						<GalleryPost {...post} />
+					))}
+				</section>
+			) : (
+				<div class="text-center py-20 bg-surface rounded-3xl border border-hairline">
+					<p class="text-ink-secondary text-lg">
+						🌱 Aún estamos preparando la galería. <br />
+						¡Pronto verás aquí los momentos más especiales de
+						nuestra comunidad!
+					</p>
+				</div>
+			)
+		}
+	</main>
+</Layout>

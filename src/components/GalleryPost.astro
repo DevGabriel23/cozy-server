@@ -1,0 +1,84 @@
+---
+// src/components/GalleryPost.astro
+interface Props {
+	image: string;
+	username: string;
+	date: string;
+	description: string;
+}
+const { image, username, date, description } = Astro.props;
+const dialogId = `dialog-${username.replace(/\s+/g, "")}`; // ID único por post
+---
+
+<article
+	class="bg-surface rounded-3xl overflow-hidden border border-hairline shadow-soft transition-all hover:shadow-lg"
+>
+	<button
+		onclick={`document.getElementById('${dialogId}').showModal()`}
+		class="w-full cursor-pointer"
+	>
+		<img
+			src={image}
+			alt={`Captura de ${username}`}
+			class="w-full h-64 object-cover"
+		/>
+	</button>
+
+	<div class="p-6">
+		<h4 class="font-heading text-xl text-ink-primary">{username}</h4>
+		<p class="text-ink-secondary text-sm mb-4">{date}</p>
+		<p class="text-ink-primary font-body">{description}</p>
+	</div>
+</article>
+<dialog
+	id={dialogId}
+	class="p-0 rounded-3xl backdrop:bg-black/80 w-[90vw] max-w-4xl shadow-2xl m-auto bg-surface"
+>
+	<div class="relative">
+		<button
+			onclick={`document.getElementById('${dialogId}').close()`}
+			class="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 z-10"
+		>
+			✕
+		</button>
+		<img
+			src={image}
+			alt={username}
+			class="w-full max-h-[60vh] object-cover"
+		/>
+		<div class="p-8">
+			<h4 class="font-heading text-2xl text-ink-primary">{username}</h4>
+			<p class="text-ink-secondary text-sm mb-4">{date}</p>
+			<p class="text-ink-primary font-body text-lg">{description}</p>
+		</div>
+	</div>
+</dialog>
+
+<script is:inline define:vars={{ dialogId }}>
+	// Seleccionar el dialog específico por su ID
+	const modal = document.getElementById(dialogId);
+
+	// Cerrar al hacer clic en el backdrop
+	modal.addEventListener("click", (e) => {
+		const dialogDimensions = modal.getBoundingClientRect();
+		if (
+			e.clientX < dialogDimensions.left ||
+			e.clientX > dialogDimensions.right ||
+			e.clientY < dialogDimensions.top ||
+			e.clientY > dialogDimensions.bottom
+		) {
+			modal.close();
+		}
+	});
+</script>
+
+<style>
+	/* Aseguramos que el diálogo se centre bien */
+	dialog[open] {
+		display: flex;
+		flex-direction: column;
+	}
+	dialog::backdrop {
+		backdrop-filter: blur(8px);
+	}
+</style>
