@@ -1,4 +1,7 @@
 ---
+import Discord from "./Icons/Discord.astro";
+import Whatsapp from "./Icons/Whatsapp.astro";
+
 // src/components/NavBar.astro
 
 const navLinks = [
@@ -47,14 +50,25 @@ const whatsappLink =
 				}
 			</nav>
 
-			<div class="hidden md:flex">
+			<div class="hidden md:flex items-center gap-4">
 				<a
 					href={whatsappLink}
 					target="_blank"
 					rel="noopener noreferrer"
-					class="bg-brand-sage text-on-dark px-6 py-2 rounded-full font-body font-medium shadow-soft hover:shadow-hover hover:-translate-y-0.5 transition-all duration-300"
+					class="flex items-center gap-2 px-4 py-2 rounded-full text-ink-secondary hover:bg-brand-sage-soft hover:text-brand-sage-deep transition-all"
 				>
-					Unirse al Whatsapp
+					<Whatsapp class="w-6 h-6 fill-current" />
+					<span>WhatsApp</span>
+				</a>
+
+				<a
+					href="https://discord.com/invite/yvdE67HCp"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="flex items-center gap-2 bg-brand-sage text-on-dark px-6 py-2 rounded-full font-body font-medium shadow-soft hover:shadow-hover hover:-translate-y-0.5 transition-all duration-300"
+				>
+					<Discord class="w-6 h-6 text-on-dark fill-current" />
+					<span> Unirse al Discord </span>
 				</a>
 			</div>
 
@@ -93,13 +107,23 @@ const whatsappLink =
 				</a>
 			))
 		}
-		<div class="pt-4 pb-2 border-t border-hairline">
+		<div class="pt-4 pb-2 border-t border-hairline space-y-3">
+			<a
+				href="https://discord.com/invite/yvdE67HCp"
+				target="_blank"
+				class="flex items-center gap-2 justify-center w-full text-center bg-brand-sage text-on-dark px-6 py-3 rounded-full font-body font-medium shadow-soft"
+			>
+				<Discord class="w-6 h-6 text-on-dark fill-current" />
+				<span> Unirse al Discord </span>
+			</a>
+
 			<a
 				href={whatsappLink}
 				target="_blank"
-				class="block w-full text-center bg-brand-sage text-on-dark px-6 py-3 rounded-full font-body font-medium shadow-soft"
+				class="flex items-center gap-2 justify-center w-full text-ink-secondary py-3 rounded-full font-body font-medium border border-hairline hover:bg-brand-sage-soft transition-colors"
 			>
-				Unirse al Whatsapp
+				<Whatsapp class="w-6 h-6 fill-current" />
+				<span>WhatsApp</span>
 			</a>
 		</div>
 	</div>

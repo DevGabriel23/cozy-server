@@ -1,5 +1,7 @@
 ---
 // src/components/Footer.astro
+const whatsappLink =
+	"https://wa.me/527821063964?text=Quiero%20unirme%20al%20servidor%20Cozy%20Server%20y%20necesito%20la%20invitación%20al%20grupo%20de%20whatsapp";
 ---
 
 <footer
@@ -26,23 +28,47 @@
 			<p class="font-heading text-xl text-ink-primary font-bold">Cozy</p>
 		</div>
 
-		<nav
-			class="justify-center gap-6 text-ink-primary font-body font-medium bg-canvas/50 py-2 px-6 rounded-full inline-flex"
+		<div
+			class="flex flex-wrap justify-center gap-4 p-6 bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl w-full max-w-md mx-auto shadow-lg"
 		>
-			<a href="/rules" class="hover:text-brand-sage transition-colors"
-				>Reglas</a
+			<a
+				href="/rules"
+				class="px-6 py-3 bg-white/80 hover:bg-white text-stone-800 font-semibold rounded-full transition-all duration-200 shadow-sm hover:-translate-y-0.5"
 			>
+				Reglas
+			</a>
+
+			<a
+				href="/support"
+				class="px-6 py-3 bg-white/80 hover:bg-white text-stone-800 font-semibold rounded-full transition-all duration-200 shadow-sm hover:-translate-y-0.5"
+			>
+				Soporte
+			</a>
+
+			<a
+				href="mailto:gabrielramondev23@gmail.com"
+				class="px-6 py-3 bg-white/80 hover:bg-white text-stone-800 font-semibold rounded-full transition-all duration-200 shadow-sm hover:-translate-y-0.5"
+			>
+				Contacto
+			</a>
 			<a
 				href="https://discord.com/invite/yvdE67HCp"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="hover:text-brand-sage transition-colors">Discord</a
+				class="px-6 py-3 bg-white/80 hover:bg-white text-stone-800 font-semibold rounded-full transition-all duration-200 shadow-sm hover:-translate-y-0.5"
 			>
+				Discord
+			</a>
+
 			<a
-				href="mailto:gabrielramondev23@gmail.com"
-				class="hover:text-brand-sage transition-colors">Contacto</a
+				href={whatsappLink}
+				target="_blank"
+				rel="noopener noreferrer"
+				class="px-6 py-3 bg-white/80 hover:bg-white text-stone-800 font-semibold rounded-full transition-all duration-200 shadow-sm hover:-translate-y-0.5"
 			>
-		</nav>
+				WhatsApp
+			</a>
+		</div>
 
 		<p class="text-sm text-ink-primary font-body mt-6">
 			© {new Date().getFullYear()} Creado con ❤️ para la comunidad.
