@@ -13,7 +13,7 @@ interface Props {
 const {
 	title = "Cozy Server",
 	description = "Un servidor privado de Minecraft Bedrock con un toque aesthetic y acogedor",
-	image = "/favicon.svg",
+	image = "/images/og-image.jpg",
 } = Astro.props;
 
 const canonicalURL = new URL(
@@ -34,6 +34,8 @@ const canonicalURL = new URL(
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:image" content={image} />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:type" content="website" />
 
 		<link rel="canonical" href={canonicalURL} />
 		<ClientRouter />
