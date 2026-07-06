@@ -1,84 +1,371 @@
 ---
-// src/components/GalleryPost.astro
+import { formatRelativeDate } from "../utils/dateUtils";
 interface Props {
-	image: string;
-	username: string;
+	id: number | string;
+	images: string[];
+	username: string | null;
 	date: string;
 	description: string;
 }
-const { image, username, date, description } = Astro.props;
-const dialogId = `dialog-${username.replace(/\s+/g, "")}`; // ID único por post
+const { id, images, username, date, description } = Astro.props;
+const menuId = `menu-${id}`;
+const dialogId = `extended-${id}`;
+const hasMultiple = images.length > 1;
 ---
 
 <article
-	class="bg-surface rounded-3xl overflow-hidden border border-hairline shadow-soft transition-all hover:shadow-lg"
+	class="bg-surface rounded-2xl overflow-hidden border border-hairline shadow-sm relative post-card"
+	data-images={JSON.stringify(images)}
+	data-post-id={id}
 >
-	<button
-		onclick={`document.getElementById('${dialogId}').showModal()`}
-		class="w-full cursor-pointer"
-	>
-		<img
-			src={image}
-			alt={`Captura de ${username}`}
-			class="w-full h-64 object-cover"
-		/>
-	</button>
+	<div class="flex items-center gap-3 p-3 relative z-10">
+		<div
+			class="rounded-full bg-brand-sage text-white font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner"
+		>
+			{username?.slice(0, 2).toUpperCase() ?? "??"}
+		</div>
+		<h4 class="font-bold text-ink-primary text-sm">
+			{username ?? "Desconocido"}
+		</h4>
 
-	<div class="p-6">
-		<h4 class="font-heading text-xl text-ink-primary">{username}</h4>
-		<p class="text-ink-secondary text-sm mb-4">{date}</p>
-		<p class="text-ink-primary font-body">{description}</p>
+		<div class="ml-auto relative">
+			<button
+				class="options-btn p-2 hover:bg-ink-muted/10 rounded-full cursor-pointer"
+			>
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="currentColor"
+					><circle cx="12" cy="12" r="2"></circle><circle
+						cx="12"
+						cy="5"
+						r="2"></circle><circle cx="12" cy="19" r="2"
+					></circle></svg
+				>
+			</button>
+
+			<div
+				id={menuId}
+				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-xl shadow-xl border border-hairline w-40 bg-surface z-50"
+			>
+				<a
+					href={images[0]}
+					download
+					class="save-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm"
+					>Descargar</a
+				>
+				<button
+					class="share-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm w-full text-left"
+					>Compartir</button
+				>
+			</div>
+		</div>
+	</div>
+
+	<div class="relative group aspect-square overflow-hidden bg-surface">
+		{
+			hasMultiple && (
+				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none counter z-10">
+					1/{images.length}
+				</div>
+			)
+		}
+
+		<div
+			class="carousel-container flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
+		>
+			{
+				images.map((img) => (
+					<img
+						src={img}
+						draggable="false"
+						class="carousel-item min-w-full w-full h-full object-cover snap-start flex-shrink-0 select-none"
+					/>
+				))
+			}
+		</div>
+
+		{
+			hasMultiple && (
+				<>
+					<button class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn z-10 shadow-md">
+						❮
+					</button>
+					<button class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn z-10 shadow-md">
+						❯
+					</button>
+				</>
+			)
+		}
+	</div>
+
+	<div class="px-4 py-3">
+		{
+			hasMultiple && (
+				<div class="flex justify-center gap-1.5 mb-3 indicators">
+					{images.map((_, i) => (
+						<div
+							class={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === 0 ? "bg-brand-sage" : "bg-ink-muted"}`}
+						/>
+					))}
+				</div>
+			)
+		}
+		<p class="text-ink-primary text-sm font-body">
+			<span class="font-bold mr-2">{username}</span>{description}
+		</p>
+		<p class="text-ink-secondary text-xs mt-2">
+			{formatRelativeDate(date)}
+		</p>
 	</div>
 </article>
+
 <dialog
 	id={dialogId}
-	class="p-0 rounded-3xl backdrop:bg-black/80 w-[90vw] max-w-4xl shadow-2xl m-auto bg-surface"
+	class="extended-dialog p-0 rounded-2xl backdrop:bg-black/80 w-[95vw] max-w-5xl shadow-2xl m-auto bg-surface"
 >
-	<div class="relative">
-		<button
-			onclick={`document.getElementById('${dialogId}').close()`}
-			class="absolute top-4 right-4 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 z-10"
+	<div class="flex flex-col md:flex-row h-full max-h-[85vh]">
+		<div
+			class="relative w-full md:w-[60%] bg-black flex items-center justify-center group overflow-hidden"
 		>
-			✕
-		</button>
-		<img
-			src={image}
-			alt={username}
-			class="w-full max-h-[60vh] object-cover"
-		/>
-		<div class="p-8">
-			<h4 class="font-heading text-2xl text-ink-primary">{username}</h4>
-			<p class="text-ink-secondary text-sm mb-4">{date}</p>
-			<p class="text-ink-primary font-body text-lg">{description}</p>
+			<div
+				class="carousel-container-modal flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth"
+			>
+				{
+					images.map((img) => (
+						<img
+							src={img}
+							class="min-w-full w-full h-full object-contain snap-center flex-shrink-0"
+						/>
+					))
+				}
+			</div>
+			{
+				hasMultiple && (
+					<>
+						<button class="absolute w-10 h-10 left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn-modal z-10">
+							❮
+						</button>
+						<button class="absolute w-10 h-10 right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn-modal z-10">
+							❯
+						</button>
+					</>
+				)
+			}
+		</div>
+
+		<div
+			class="w-full md:w-[40%] p-6 flex flex-col border-l border-hairline"
+		>
+			<div class="flex items-center justify-between mb-6">
+				<div class="flex items-center gap-3">
+					<div
+						class="rounded-full bg-brand-sage w-10 h-10 flex items-center justify-center text-white text-sm font-bold"
+					>
+						{username?.slice(0, 2).toUpperCase()}
+					</div>
+					<h4 class="font-bold text-ink-primary text-lg">
+						{username}
+					</h4>
+				</div>
+				<button
+					onclick={`document.getElementById('${dialogId}').close(); window.history.replaceState({}, '', window.location.pathname);`}
+					class="text-ink-muted hover:text-ink-primary text-xl"
+					>✕</button
+				>
+			</div>
+
+			<div class="overflow-y-auto flex-1 pr-2">
+				<p class="text-ink-primary font-body text-base leading-relaxed">
+					{description}
+				</p>
+			</div>
+			<div class="mt-4 pt-4 border-t border-hairline">
+				<p class="text-ink-secondary text-sm">{date}</p>
+			</div>
 		</div>
 	</div>
 </dialog>
 
-<script is:inline define:vars={{ dialogId }}>
-	// Seleccionar el dialog específico por su ID
-	const modal = document.getElementById(dialogId);
-
-	// Cerrar al hacer clic en el backdrop
-	modal.addEventListener("click", (e) => {
-		const dialogDimensions = modal.getBoundingClientRect();
-		if (
-			e.clientX < dialogDimensions.left ||
-			e.clientX > dialogDimensions.right ||
-			e.clientY < dialogDimensions.top ||
-			e.clientY > dialogDimensions.bottom
-		) {
-			modal.close();
-		}
-	});
-</script>
-
 <style>
-	/* Aseguramos que el diálogo se centre bien */
-	dialog[open] {
-		display: flex;
-		flex-direction: column;
+	/* Ocultamos las barras de scroll nativas, pero mantenemos la funcionalidad */
+	.carousel-container,
+	.carousel-container-modal {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.carousel-container::-webkit-scrollbar,
+	.carousel-container-modal::-webkit-scrollbar {
+		display: none;
 	}
 	dialog::backdrop {
 		backdrop-filter: blur(8px);
 	}
 </style>
+<script>
+	function initGallery() {
+		document
+			.querySelectorAll("article[data-post-id]")
+			.forEach((article) => {
+				if (article.hasAttribute("data-initialized")) return;
+				article.setAttribute("data-initialized", "true");
+
+				const postId = article.getAttribute("data-post-id");
+				const images = JSON.parse(
+					article.getAttribute("data-images") || "[]",
+				);
+				const container = article.querySelector(
+					".carousel-container",
+				) as HTMLElement;
+
+				// --- 1. Lógica del Menú Opciones y Compartir ---
+				const optionsBtn = article.querySelector(".options-btn");
+				const shareBtn = article.querySelector(".share-btn");
+
+				optionsBtn?.addEventListener("click", (e) => {
+					e.stopPropagation();
+					const menu = optionsBtn.nextElementSibling;
+					document
+						.querySelectorAll(".options-menu")
+						.forEach(
+							(m) => m !== menu && m.classList.add("hidden"),
+						);
+					menu?.classList.toggle("hidden");
+				});
+
+				shareBtn?.addEventListener("click", (e) => {
+					e.stopPropagation();
+					const postUrl = `${window.location.origin}${window.location.pathname}?id=${postId}`;
+					navigator.clipboard
+						.writeText(postUrl)
+						.then(() => alert("¡Enlace copiado!"));
+					article
+						.querySelector(".options-menu")
+						?.classList.add("hidden");
+				});
+
+				if (!container) return;
+
+				// --- 2. Interfaz reactiva (Contador móvil, Puntitos y Botón Guardar) ---
+				const counter = article.querySelector(
+					".counter",
+				) as HTMLElement;
+				const dots = article.querySelectorAll(".indicators > div");
+				const saveBtn = article.querySelector(
+					".save-btn",
+				) as HTMLAnchorElement;
+
+				// Novedad: Mostrar el contador al cargar por 2 segundos (buen UX para móvil)
+				if (counter) {
+					counter.style.opacity = "1";
+					article.dataset.timer = setTimeout(() => {
+						counter.style.opacity = "";
+					}, 2500).toString();
+				}
+
+				container.addEventListener("scroll", () => {
+					const index = Math.round(
+						container.scrollLeft / container.clientWidth,
+					);
+
+					// Novedad: Lógica de aparición en móvil durante el Scroll
+					if (counter) {
+						counter.textContent = `${index + 1}/${images.length}`;
+						counter.style.opacity = "1"; // Fuerza la aparición
+
+						clearTimeout(Number(article.dataset.timer));
+
+						// Se oculta 2 segundos después de que dejas de deslizar
+						article.dataset.timer = setTimeout(() => {
+							counter.style.opacity = ""; // Devuelve el control al hover de PC
+						}, 2000).toString();
+					}
+
+					dots.forEach((dot, i) => {
+						dot.className = `w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === index ? "bg-brand-sage" : "bg-ink-muted"}`;
+					});
+
+					if (saveBtn && images[index]) saveBtn.href = images[index];
+				});
+
+				// --- 3. Navegación con Botones ---
+				article
+					.querySelector(".next-btn")
+					?.addEventListener("click", (e) => {
+						e.stopPropagation();
+						container.scrollBy({
+							left: container.clientWidth,
+							behavior: "smooth",
+						});
+					});
+
+				article
+					.querySelector(".prev-btn")
+					?.addEventListener("click", (e) => {
+						e.stopPropagation();
+						container.scrollBy({
+							left: -container.clientWidth,
+							behavior: "smooth",
+						});
+					});
+
+				// --- 4. Clic para expandir el Post ---
+				container.addEventListener("click", (e) => {
+					const newUrl = `${window.location.pathname}?id=${postId}`;
+					window.history.pushState({ path: newUrl }, "", newUrl);
+					const dialog = document.getElementById(
+						`extended-${postId}`,
+					) as HTMLDialogElement;
+					dialog?.showModal();
+				});
+			});
+
+		// Controles para la versión modal (extendida)
+		document.querySelectorAll(".extended-dialog").forEach((dialog) => {
+			const containerModal = dialog.querySelector(
+				".carousel-container-modal",
+			);
+			dialog
+				.querySelector(".next-btn-modal")
+				?.addEventListener("click", () => {
+					containerModal?.scrollBy({
+						left: containerModal.clientWidth,
+						behavior: "smooth",
+					});
+				});
+			dialog
+				.querySelector(".prev-btn-modal")
+				?.addEventListener("click", () => {
+					containerModal?.scrollBy({
+						left: -containerModal.clientWidth,
+						behavior: "smooth",
+					});
+				});
+		});
+
+		// Cierra los menús flotantes al hacer clic en cualquier otro lado
+		window.addEventListener("click", () =>
+			document
+				.querySelectorAll(".options-menu")
+				.forEach((m) => m.classList.add("hidden")),
+		);
+	}
+
+	// Auto-lanzamiento de modales basado en la URL
+	function checkUrlForPost() {
+		const urlParams = new URLSearchParams(window.location.search);
+		const postId = urlParams.get("id");
+		if (postId) {
+			const dialog = document.getElementById(
+				`extended-${postId}`,
+			) as HTMLDialogElement;
+			if (dialog) dialog.showModal();
+		}
+	}
+
+	document.addEventListener("astro:page-load", () => {
+		initGallery();
+		checkUrlForPost();
+	});
+</script>

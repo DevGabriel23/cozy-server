@@ -21,9 +21,13 @@ import { galleryPosts } from "../data/galleryPosts";
 			</p>
 		</header>
 
+		<div>
+			<!-- Acá va el switch para la vista -->
+		</div>
+
 		{
 			galleryPosts.length > 0 ? (
-				<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+				<section class="grid grid-cols-1 gap-8 max-w-lg mx-auto">
 					{galleryPosts.map((post) => (
 						<GalleryPost {...post} />
 					))}
