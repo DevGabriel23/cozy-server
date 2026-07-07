@@ -1,5 +1,10 @@
 ---
+// src/components/GalleryPost.astro
 import { formatRelativeDate } from "../utils/dateUtils";
+import GalleryModal from "./GalleryModal.astro";
+import IconDownload from "./icons/IconDownload.astro";
+import IconLink from "./icons/IconLink.astro";
+
 interface Props {
 	id: number | string;
 	images: string[];
@@ -7,9 +12,9 @@ interface Props {
 	date: string;
 	description: string;
 }
+
 const { id, images, username, date, description } = Astro.props;
 const menuId = `menu-${id}`;
-const dialogId = `extended-${id}`;
 const hasMultiple = images.length > 1;
 ---
 
@@ -53,11 +58,18 @@ const hasMultiple = images.length > 1;
 					href={images[0]}
 					download
 					class="save-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm"
-					>Descargar</a
+				>
+					<IconDownload
+						class="w-5 h-5"
+						aria-label="Descargar imagen"
+					/>
+					Descargar</a
 				>
 				<button
 					class="share-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm w-full text-left"
-					>Compartir</button
+				>
+					<IconLink class="w-5 h-5" aria-label="Compartir imagen" />
+					Compartir</button
 				>
 			</div>
 		</div>
@@ -121,92 +133,33 @@ const hasMultiple = images.length > 1;
 	</div>
 </article>
 
-<dialog
-	id={dialogId}
-	class="extended-dialog p-0 rounded-2xl backdrop:bg-black/80 w-[95vw] max-w-5xl shadow-2xl m-auto bg-surface"
->
-	<div class="flex flex-col md:flex-row h-full max-h-[85vh]">
-		<div
-			class="relative w-full md:w-[60%] bg-black flex items-center justify-center group overflow-hidden"
-		>
-			<div
-				class="carousel-container-modal flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth"
-			>
-				{
-					images.map((img) => (
-						<img
-							src={img}
-							class="min-w-full w-full h-full object-contain snap-center flex-shrink-0"
-						/>
-					))
-				}
-			</div>
-			{
-				hasMultiple && (
-					<>
-						<button class="absolute w-10 h-10 left-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn-modal z-10">
-							❮
-						</button>
-						<button class="absolute w-10 h-10 right-4 top-1/2 -translate-y-1/2 bg-white/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn-modal z-10">
-							❯
-						</button>
-					</>
-				)
-			}
-		</div>
-
-		<div
-			class="w-full md:w-[40%] p-6 flex flex-col border-l border-hairline"
-		>
-			<div class="flex items-center justify-between mb-6">
-				<div class="flex items-center gap-3">
-					<div
-						class="rounded-full bg-brand-sage w-10 h-10 flex items-center justify-center text-white text-sm font-bold"
-					>
-						{username?.slice(0, 2).toUpperCase()}
-					</div>
-					<h4 class="font-bold text-ink-primary text-lg">
-						{username}
-					</h4>
-				</div>
-				<button
-					onclick={`document.getElementById('${dialogId}').close(); window.history.replaceState({}, '', window.location.pathname);`}
-					class="text-ink-muted hover:text-ink-primary text-xl"
-					>✕</button
-				>
-			</div>
-
-			<div class="overflow-y-auto flex-1 pr-2">
-				<p class="text-ink-primary text-sm font-body">
-					<span class="font-bold mr-2">{username}</span>{description}
-				</p>
-			</div>
-			<div class="mt-4 pt-4 border-t border-hairline">
-				<p class="text-ink-secondary text-sm">
-					{formatRelativeDate(date)}
-				</p>
-			</div>
-		</div>
-	</div>
-</dialog>
+<GalleryModal
+	id={id}
+	images={images}
+	username={username}
+	date={date}
+	description={description}
+/>
 
 <style>
-	/* Ocultamos las barras de scroll nativas, pero mantenemos la funcionalidad */
-	.carousel-container,
-	.carousel-container-modal {
+	.carousel-container {
 		scrollbar-width: none;
 		-ms-overflow-style: none;
 	}
-	.carousel-container::-webkit-scrollbar,
-	.carousel-container-modal::-webkit-scrollbar {
+	.carousel-container::-webkit-scrollbar {
 		display: none;
 	}
-	dialog::backdrop {
-		backdrop-filter: blur(8px);
-	}
 </style>
+
 <script>
-	function initGallery() {
+	document.addEventListener("astro:page-load", () => {
+		// Cierra los menús globales al hacer clic fuera
+		window.addEventListener("click", () =>
+			document
+				.querySelectorAll(".options-menu")
+				.forEach((m) => m.classList.add("hidden")),
+		);
+
 		document
 			.querySelectorAll("article[data-post-id]")
 			.forEach((article) => {
@@ -221,7 +174,7 @@ const hasMultiple = images.length > 1;
 					".carousel-container",
 				) as HTMLElement;
 
-				// --- 1. Lógica del Menú Opciones y Compartir ---
+				// 1. Menús
 				const optionsBtn = article.querySelector(".options-btn");
 				const shareBtn = article.querySelector(".share-btn");
 
@@ -249,7 +202,7 @@ const hasMultiple = images.length > 1;
 
 				if (!container) return;
 
-				// --- 2. Interfaz reactiva (Contador móvil, Puntitos y Botón Guardar) ---
+				// 2. Carrusel Reactivo
 				const counter = article.querySelector(
 					".counter",
 				) as HTMLElement;
@@ -258,10 +211,9 @@ const hasMultiple = images.length > 1;
 					".save-btn",
 				) as HTMLAnchorElement;
 
-				// Novedad: Mostrar el contador al cargar por 2 segundos (buen UX para móvil)
 				if (counter) {
 					counter.style.opacity = "1";
-					article.dataset.timer = setTimeout(() => {
+					(article as HTMLElement).dataset.timer = setTimeout(() => {
 						counter.style.opacity = "";
 					}, 2500).toString();
 				}
@@ -271,17 +223,18 @@ const hasMultiple = images.length > 1;
 						container.scrollLeft / container.clientWidth,
 					);
 
-					// Novedad: Lógica de aparición en móvil durante el Scroll
 					if (counter) {
 						counter.textContent = `${index + 1}/${images.length}`;
-						counter.style.opacity = "1"; // Fuerza la aparición
-
-						clearTimeout(Number(article.dataset.timer));
-
-						// Se oculta 2 segundos después de que dejas de deslizar
-						article.dataset.timer = setTimeout(() => {
-							counter.style.opacity = ""; // Devuelve el control al hover de PC
-						}, 2000).toString();
+						counter.style.opacity = "1";
+						clearTimeout(
+							Number((article as HTMLElement).dataset.timer),
+						);
+						(article as HTMLElement).dataset.timer = setTimeout(
+							() => {
+								counter.style.opacity = "";
+							},
+							2000,
+						).toString();
 					}
 
 					dots.forEach((dot, i) => {
@@ -291,7 +244,7 @@ const hasMultiple = images.length > 1;
 					if (saveBtn && images[index]) saveBtn.href = images[index];
 				});
 
-				// --- 3. Navegación con Botones ---
+				// 3. Botones y Clic para Modal
 				article
 					.querySelector(".next-btn")
 					?.addEventListener("click", (e) => {
@@ -312,62 +265,16 @@ const hasMultiple = images.length > 1;
 						});
 					});
 
-				// --- 4. Clic para expandir el Post ---
-				container.addEventListener("click", (e) => {
+				container.addEventListener("click", () => {
 					const newUrl = `${window.location.pathname}?id=${postId}`;
 					window.history.pushState({ path: newUrl }, "", newUrl);
-					const dialog = document.getElementById(
-						`extended-${postId}`,
-					) as HTMLDialogElement;
-					dialog?.showModal();
+					const modal = document.getElementById(`extended-${postId}`);
+					if (modal) {
+						modal.classList.remove("hidden");
+						modal.classList.add("flex");
+						document.body.style.overflow = "hidden";
+					}
 				});
 			});
-
-		// Controles para la versión modal (extendida)
-		document.querySelectorAll(".extended-dialog").forEach((dialog) => {
-			const containerModal = dialog.querySelector(
-				".carousel-container-modal",
-			);
-			dialog
-				.querySelector(".next-btn-modal")
-				?.addEventListener("click", () => {
-					containerModal?.scrollBy({
-						left: containerModal.clientWidth,
-						behavior: "smooth",
-					});
-				});
-			dialog
-				.querySelector(".prev-btn-modal")
-				?.addEventListener("click", () => {
-					containerModal?.scrollBy({
-						left: -containerModal.clientWidth,
-						behavior: "smooth",
-					});
-				});
-		});
-
-		// Cierra los menús flotantes al hacer clic en cualquier otro lado
-		window.addEventListener("click", () =>
-			document
-				.querySelectorAll(".options-menu")
-				.forEach((m) => m.classList.add("hidden")),
-		);
-	}
-
-	// Auto-lanzamiento de modales basado en la URL
-	function checkUrlForPost() {
-		const urlParams = new URLSearchParams(window.location.search);
-		const postId = urlParams.get("id");
-		if (postId) {
-			const dialog = document.getElementById(
-				`extended-${postId}`,
-			) as HTMLDialogElement;
-			if (dialog) dialog.showModal();
-		}
-	}
-
-	document.addEventListener("astro:page-load", () => {
-		initGallery();
-		checkUrlForPost();
 	});
 </script>

@@ -44,3 +44,19 @@ import { galleryPosts } from "../data/galleryPosts";
 		}
 	</main>
 </Layout>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		// Auto-lanzamiento de modales basado en la URL
+		const urlParams = new URLSearchParams(window.location.search);
+		const postId = urlParams.get("id");
+		if (postId) {
+			const modal = document.getElementById(`extended-${postId}`);
+			if (modal) {
+				modal.classList.remove("hidden");
+				modal.classList.add("flex");
+				document.body.style.overflow = "hidden";
+			}
+		}
+	});
+</script>
