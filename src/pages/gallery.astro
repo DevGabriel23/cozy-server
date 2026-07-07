@@ -3,6 +3,8 @@
 import GalleryPost from "../components/GalleryPost.astro";
 import Layout from "../layouts/Layout.astro";
 import { galleryPosts } from "../data/galleryPosts";
+
+galleryPosts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 ---
 
 <Layout
