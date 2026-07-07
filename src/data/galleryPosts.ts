@@ -36,4 +36,11 @@ export const galleryPosts: GalleryPostData[] = [
         date: "2026-07-05T00:00:00Z",
         description: "Paralelismos cinematográficos entre la prohibición de ZONAGAMER079897 y el meme de Garfield 😺🚫🐈."
     },
+    {
+        id: 5,
+        images: ["/gallery/casa-progreso1.jpeg"],
+        username: "CinnamonGirl",
+        date: "2026-07-07T00:07:47Z",
+        description: "Nomas pude avanzar un poquito ahora"
+    },
 ];
