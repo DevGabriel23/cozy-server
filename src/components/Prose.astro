@@ -1,0 +1,47 @@
+---
+// src/components/Prose.astro
+---
+
+<div
+	class="prose
+    space-y-4
+    mb-12
+    
+    prose-ul:list-none
+    prose-ul:p-0
+    prose-ul:m-0
+    prose-ul:flex
+    prose-ul:flex-col
+    prose-ul:gap-3
+    
+    prose-li:relative
+    prose-li:pl-8
+    prose-li:font-(--font-body)
+    prose-li:text-base
+    prose-li:leading-[1.6]
+    prose-li:text-ink-primary
+    prose-li:my-0
+    
+    prose-li:before:content-['']
+    prose-li:before:absolute
+    prose-li:before:left-0
+    prose-li:before:top-2.5
+    prose-li:before:w-2
+    prose-li:before:h-2
+    prose-li:before:bg-brand-sage-deep
+    prose-li:before:rounded-full
+    prose-li:before:shrink-0
+
+    prose-a:text-ink-primary
+    prose-a:font-medium
+    prose-a:no-underline
+    prose-a:underline-offset-2
+    prose-a:transition-colors
+    prose-a:duration-300
+    prose-a:hover:text-brand-sage-deep
+    prose-a:hover:underline
+
+"
+>
+	<slot />
+</div>

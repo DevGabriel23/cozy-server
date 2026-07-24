@@ -5,6 +5,7 @@ creatorLink: "https://www.minecraft.net/en-us/marketplace/creator/podcrash"
 type: "Addon"
 description: "¡Transforma tu mundo con el Gardening Add-On! Explora 290 flores, cottages encantadores, herramientas funcionales y decoración de cuentos para tu jardín."
 youtubeLink: "pXTpDiquomk"
+pubDate: 2026-06-30
 ---
 Es hora de darle nueva vida a tu jardín. La jardinería te ofrece cientos de nuevas especies de plantas que puedes descubrir en todo el mundo. Pasea por vibrantes prados de flores o encuentra las plantas más resistentes que brotan de los desiertos arenosos. ¡La jardinería también te brinda nuevas maneras de decorar tus espacios exteriores con bebederos para pájaros, bancos, gnomos y mucho más!
 

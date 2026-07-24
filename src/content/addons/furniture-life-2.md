@@ -5,6 +5,7 @@ creatorLink: "https://www.minecraft.net/en-us/marketplace/creator/pixelheads"
 type: "Addon"
 description: "Con más de 2000 bloques de muebles reales, diseña desde casas acogedoras hasta ciudades."
 youtubeLink: ""
+pubDate: 2026-06-30
 ---
 ¡Bienvenido a Furniture Life! Con más de 2000 bloques de muebles reales, puedes diseñar desde acogedoras casas hasta extensas ciudades. Desde estilos modernos hasta clásicos atemporales, hay un estilo para todos los gustos. Además, descubre nuevas comidas, vehículos y personajes no jugables para dar vida a tus sueños pixelados.
 

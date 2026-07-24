@@ -5,6 +5,7 @@ creatorLink: "https://www.minecraft.net/es-es/marketplace/creator/oreville-studi
 type: "Texture Pack"
 description: "El paquete de animación que no sabías que necesitabas: ¡Dale vida a tu mundo con nuevas animaciones, partículas, texturas y más!"
 youtubeLink: "VDk8niB2Obw?si=OnENBerDOTUxizx7"
+pubDate: 2026-06-30
 ---
 El paquete de animación que no sabías que necesitabas: ¡Dale vida a tu mundo con nuevas animaciones, partículas, texturas y más!
 

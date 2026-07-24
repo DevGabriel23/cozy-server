@@ -8,7 +8,7 @@
 export function formatRelativeDate(dateString: string): string {
     const date = new Date(dateString);
     const now = new Date();
-    
+
     // Diferencia en milisegundos
     const diffTime = now.getTime() - date.getTime();
     const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
@@ -34,7 +34,19 @@ export function formatRelativeDate(dateString: string): string {
 
     // Intl.DateTimeFormat usa la zona horaria local del navegador
     const formatter = new Intl.DateTimeFormat('es-ES', options);
-    
+
     // Formateamos y eliminamos el punto del mes si existiera (depende del navegador)
     return formatter.format(date).replace('.', '');
+}
+
+/**
+ * Determina si una fecha es reciente (menos de 7 días).
+ * @param date Fecha a evaluar 
+ * @returns boolean
+ */
+export function isRecent(date: Date): boolean {
+    const now = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(now.getDate() - 7);
+    return date >= sevenDaysAgo && date <= now;
 }

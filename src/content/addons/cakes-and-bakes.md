@@ -5,6 +5,7 @@ creatorLink: "https://www.minecraft.net/en-us/marketplace/creator/some-game-stud
 type: "Addon"
 description: "¡Vive el sueño de tener tu propia panadería! Amplía tu granja y prepara deliciosos dulces."
 youtubeLink: "oG1aEj0qGHY"
+pubDate: 2026-06-30
 ---
 
 - ¡Mapache astuto!

@@ -11,6 +11,7 @@ const addons = defineCollection({
     type: z.enum(["Addon", "Texture Pack"]),
     description: z.string(),
     youtubeLink: z.string().optional(),
+    pubDate: z.date(),
   }),
 });
 

@@ -1,10 +1,13 @@
 ---
 // src/components/AddonsGrid.astro
 import { getCollection } from "astro:content";
-import { generateAddonImageFallback } from "../utils/imageUtils";
 import AddonCard from "./AddonCard.astro";
 
 const addons = await getCollection("addons");
+
+const sortedAddons = addons.sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+);
 ---
 
 <section id="content" class="py-12 pb-20 px-4 max-w-5xl mx-auto bg-canvas">
@@ -14,6 +17,6 @@ const addons = await getCollection("addons");
 		Contenido
 	</h2>
 	<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-		{addons.map((item) => <AddonCard item={item} variant="grid" />)}
+		{sortedAddons.map((item) => <AddonCard item={item} variant="grid" />)}
 	</div>
 </section>

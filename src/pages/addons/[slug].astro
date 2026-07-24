@@ -5,6 +5,8 @@ import { generateAddonImageFallback } from "../../utils/imageUtils";
 import AddonCard from "../../components/AddonCard.astro";
 import Gallery from "../../components/Gallery.astro";
 import { getAddonAssets } from "../../utils/addonResolver";
+import Prose from "../../components/Prose.astro";
+import { isRecent } from "../../utils/dateUtils";
 
 export async function getStaticPaths() {
 	const addons = await getCollection("addons");
@@ -40,12 +42,19 @@ const allAddons = (await getCollection("addons")).filter(
 			</nav>
 
 			<div class="flex items-center gap-3 mb-4">
-				<span
-					class="badge bg-brand-sage-soft text-brand-sage-deep px-3 py-1 rounded-full text-sm"
-				>
+                <span class="inline-block bg-brand-sage-soft text-brand-sage-deep font-body text-sm font-medium px-3 py-1 rounded-full">
 					{addon.data.type}
 				</span>
-			</div>
+
+                {isRecent(addon.data.pubDate) && (
+                    <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-200 font-body text-sm px-3 py-1 rounded-full">
+                        ✨ Nuevo
+                    </span>
+                )}
+            </div>
+
+			
+
 			<h1 class="text-4xl md:text-5xl font-heading text-ink-primary mb-2">
 				{addon.data.title}
 			</h1>
@@ -88,9 +97,9 @@ const allAddons = (await getCollection("addons")).filter(
 			)
 		}
 
-		<div class="content-body space-y-4">
+		<Prose>
 			<Content />
-		</div>
+		</Prose>
 
 		{assets.gallery && (
             <h2 class="font-heading text-2xl text-ink-primary mb-6">Galería</h2>
@@ -143,18 +152,6 @@ const allAddons = (await getCollection("addons")).filter(
 		transform: translateX(-4px);
 	}
 
-	.badge {
-		display: inline-block;
-		background-color: var(--color-brand-sage-soft);
-		color: var(--color-brand-sage-deep);
-		font-family: var(--font-body);
-		font-size: 0.875rem;
-		font-weight: 500;
-		padding: 4px 12px;
-		border-radius: 9999px;
-		margin-bottom: 12px;
-	}
-
 	.addon-header h1 {
 		font-family: var(--font-heading);
 		font-size: 2.5rem;
@@ -189,41 +186,6 @@ const allAddons = (await getCollection("addons")).filter(
 	.media-frame img {
 		width: 100%;
 		display: block;
-	}
-
-	.content-body {
-		margin-bottom: 48px;
-	}
-
-	.content-body ul {
-		list-style: none;
-		padding: 0;
-		margin: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.content-body li {
-		position: relative;
-		padding-left: 2rem;
-		font-family: var(--font-body);
-		font-size: 1rem;
-		line-height: 1.6;
-		color: var(--color-ink-primary);
-		font-weight: 450;
-	}
-
-	.content-body li::before {
-		content: "";
-		position: absolute;
-		left: 0;
-		background-color: var(--color-brand-sage-deep);
-		width: 8px;
-		height: 8px;
-		top: 10px;
-		border-radius: 50%;
-		flex-shrink: 0;
 	}
 
 	.explore-more {

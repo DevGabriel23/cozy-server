@@ -5,6 +5,7 @@ creatorLink: "https://www.minecraft.net/en-us/marketplace/creator/starfish-studi
 type: "Addon"
 description: "Crea el hogar más acogedor con muebles encantadores, un jardín vibrante y mascotas adorables."
 youtubeLink: "lkzOoRPDXU0"
+pubDate: 2026-06-30
 ---
 ¡Vive cada momento de la vida! Crea el hogar más acogedor con muebles encantadores, un jardín vibrante y mascotas adorables. Acurrúcate con tu Shiba Inu, hornea deliciosos postres y disfruta de picnics.
 
