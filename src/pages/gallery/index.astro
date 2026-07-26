@@ -24,7 +24,7 @@ galleryPosts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 			</p>
 		</header>
 
-		<div class="flex flex-wrap justify-center gap-2 mb-10 " id="filter-bar">
+		<div class="flex flex-wrap justify-center gap-2 mb-10" id="filter-bar">
 			{
 				TAG_CATALOG.map((tag) => (
 					<button
@@ -41,7 +41,7 @@ galleryPosts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 			galleryPosts.length > 0 ? (
 				<section class="grid grid-cols-1 gap-8 max-w-lg mx-auto">
 					{galleryPosts.map((post) => (
-						<GalleryPost {...post} />
+						<GalleryPost post={post} />
 					))}
 				</section>
 			) : (
@@ -76,8 +76,10 @@ galleryPosts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
 		if (!filterBar || filterBar.hasAttribute("data-init-filters")) return;
 		filterBar.setAttribute("data-init-filters", "true");
 
-		const filterBtns = filterBar.querySelectorAll<HTMLButtonElement>(".filter-btn");
-		const articles = document.querySelectorAll<HTMLElement>("article.post-card");
+		const filterBtns =
+			filterBar.querySelectorAll<HTMLButtonElement>(".filter-btn");
+		const articles =
+			document.querySelectorAll<HTMLElement>("article.post-card");
 		const activeTags = new Set<string>();
 
 		// Leer tags de la URL al cargar

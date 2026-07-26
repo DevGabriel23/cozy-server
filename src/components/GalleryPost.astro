@@ -1,33 +1,33 @@
 ---
 // src/components/GalleryPost.astro
 import { formatRelativeDate } from "../utils/dateUtils";
-import type { PostResource } from "../data/galleryPosts";
+import type { GalleryPostData, PostResource } from "../data/galleryPosts";
 import { TAG_CATALOG } from "../data/tags";
 import GalleryModal from "./GalleryModal.astro";
 import IconDownload from "./icons/IconDownload.astro";
 import IconLink from "./icons/IconLink.astro";
 
 interface Props {
-	id: number | string;
-	resources: PostResource[];
-	username: string | null;
-	date: string;
-	description: string;
-	tags?: string[];
+	post: GalleryPostData;
+	isDetailView?: boolean;
 }
 
-const { id, resources, username, date, description, tags } = Astro.props;
+const { post, isDetailView } = Astro.props;
+const { id, resources, username, date, description, tags } = post;
 const menuId = `menu-${id}`;
 const hasMultiple = resources.length > 1;
 ---
 
 <article
-	class="bg-surface rounded-md overflow-hidden border border-hairline shadow-sm relative post-card"
+	class={`overflow-hidden relative post-card bg-surface rounded-md border border-hairline shadow-sm`}
 	data-resources={JSON.stringify(resources)}
 	data-post-id={id}
 	data-tags={tags ? JSON.stringify(tags) : "[]"}
+	data-is-detail={isDetailView ? "true" : "false"}
 >
-	<div class="flex items-center gap-3 p-3 relative z-10">
+	<div
+		class={`items-center gap-3 p-3 relative z-10 ${isDetailView ? "hidden" : "flex"}`}
+	>
 		<div
 			class="rounded-full bg-brand-sage text-on-dark font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner"
 		>
@@ -58,7 +58,7 @@ const hasMultiple = resources.length > 1;
 				id={menuId}
 				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-lg shadow-soft border border-hairline w-40 bg-surface z-50"
 			>
-			<a
+				<a
 					href={resources[0].src}
 					download
 					class="save-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm"
@@ -79,7 +79,9 @@ const hasMultiple = resources.length > 1;
 		</div>
 	</div>
 
-	<div class="relative group aspect-square overflow-hidden bg-surface">
+	<div
+		class={`relative group overflow-hidden aspect-square ${isDetailView ? "md:aspect-video" : ""}`}
+	>
 		{
 			hasMultiple && (
 				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none counter z-10">
@@ -140,9 +142,30 @@ const hasMultiple = resources.length > 1;
 				</div>
 			)
 		}
-		<p class="text-ink-primary text-sm font-body">
-			<span class="font-bold mr-2">{username}</span>{description}
-		</p>
+
+		{
+			isDetailView ? (
+				<div>
+					<div class="flex items-center gap-3 relative mb-3">
+						<div class="rounded-full bg-brand-sage text-on-dark font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner">
+							{username?.slice(0, 2).toUpperCase() ?? "??"}
+						</div>
+						<h4 class="font-bold text-ink-primary text-sm">
+							{username ?? "Desconocido"}
+						</h4>
+					</div>
+					<p class="text-ink-primary text-sm font-body">
+						{description}
+					</p>
+				</div>
+			) : (
+				<p class="text-ink-primary text-sm font-body">
+					<span class="font-bold mr-2">{username}</span>
+					{description}
+				</p>
+			)
+		}
+
 		<p class="text-ink-secondary text-xs mt-2">
 			{formatRelativeDate(date)}
 		</p>
@@ -150,9 +173,13 @@ const hasMultiple = resources.length > 1;
 			tags && tags.length > 0 && (
 				<div class="flex flex-wrap gap-1.5 mt-2">
 					{tags.map((tagValue) => {
-						const tag = TAG_CATALOG.find((t) => t.value === tagValue);
+						const tag = TAG_CATALOG.find(
+							(t) => t.value === tagValue,
+						);
 						return tag ? (
-							<span class={`text-xs px-2 py-0.5 rounded-full ${tag.color}`}>
+							<span
+								class={`text-xs px-2 py-0.5 rounded-full ${tag.color}`}
+							>
 								{tag.icon} {tag.name}
 							</span>
 						) : null;
@@ -190,9 +217,7 @@ const hasMultiple = resources.length > 1;
 				const resources = JSON.parse(
 					article.getAttribute("data-resources") || "[]",
 				);
-				const imageSrcs = resources.map(
-					(r: { src: string }) => r.src,
-				);
+				const imageSrcs = resources.map((r: { src: string }) => r.src);
 				const container = article.querySelector(
 					".carousel-container",
 				) as HTMLElement;
@@ -215,7 +240,9 @@ const hasMultiple = resources.length > 1;
 				shareBtn?.addEventListener("click", (e) => {
 					e.stopPropagation();
 					const postUrl = `${window.location.origin}/gallery/${postId}`;
-					navigator.clipboard.writeText(postUrl).then(() => showToast("¡Enlace copiado!"));
+					navigator.clipboard
+						.writeText(postUrl)
+						.then(() => showToast("¡Enlace copiado!"));
 					article
 						.querySelector(".options-menu")
 						?.classList.add("hidden");
@@ -283,7 +310,8 @@ const hasMultiple = resources.length > 1;
 						dot.className = `w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === index ? "bg-brand-sage" : "bg-ink-muted"}`;
 					});
 
-					if (saveBtn && imageSrcs[index]) saveBtn.href = imageSrcs[index];
+					if (saveBtn && imageSrcs[index])
+						saveBtn.href = imageSrcs[index];
 				});
 
 				// 3. Botones y Clic para Modal
@@ -308,6 +336,10 @@ const hasMultiple = resources.length > 1;
 					});
 
 				container.addEventListener("click", () => {
+					const isDetail =
+						article.getAttribute("data-is-detail") === "true";
+					if (isDetail) return;
+
 					const newUrl = `${window.location.pathname}?id=${postId}`;
 					window.history.pushState({ path: newUrl }, "", newUrl);
 					const modal = document.getElementById(`extended-${postId}`);
