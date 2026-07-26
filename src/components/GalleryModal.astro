@@ -17,7 +17,7 @@ const hasMultiple = images.length > 1;
 
 <div
     id={dialogId}
-    class="extended-dialog fixed inset-0 z-[100] hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+    class="extended-dialog fixed inset-0 z-100 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
     onclick={`
         this.classList.add('hidden'); 
         this.classList.remove('flex'); 
@@ -29,7 +29,7 @@ const hasMultiple = images.length > 1;
         <div class="relative w-full md:w-[60%] bg-black flex items-center justify-center group overflow-hidden">
             <div class="carousel-container-modal flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth">
                 {images.map((img) => (
-                    <img src={img} class="min-w-full w-full h-full object-contain snap-center flex-shrink-0" />
+                    <img src={img} class="min-w-full w-full h-full object-contain snap-center shrink-0" />
                 ))}
             </div>
             {hasMultiple && (
