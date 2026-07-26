@@ -1,27 +1,31 @@
 ---
 // src/components/GalleryPost.astro
 import { formatRelativeDate } from "../utils/dateUtils";
+import type { PostResource } from "../data/galleryPosts";
+import { TAG_CATALOG } from "../data/tags";
 import GalleryModal from "./GalleryModal.astro";
 import IconDownload from "./icons/IconDownload.astro";
 import IconLink from "./icons/IconLink.astro";
 
 interface Props {
 	id: number | string;
-	images: string[];
+	resources: PostResource[];
 	username: string | null;
 	date: string;
 	description: string;
+	tags?: string[];
 }
 
-const { id, images, username, date, description } = Astro.props;
+const { id, resources, username, date, description, tags } = Astro.props;
 const menuId = `menu-${id}`;
-const hasMultiple = images.length > 1;
+const hasMultiple = resources.length > 1;
 ---
 
 <article
 	class="bg-surface rounded-md overflow-hidden border border-hairline shadow-sm relative post-card"
-	data-images={JSON.stringify(images)}
+	data-resources={JSON.stringify(resources)}
 	data-post-id={id}
+	data-tags={tags ? JSON.stringify(tags) : "[]"}
 >
 	<div class="flex items-center gap-3 p-3 relative z-10">
 		<div
@@ -54,8 +58,8 @@ const hasMultiple = images.length > 1;
 				id={menuId}
 				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-lg shadow-soft border border-hairline w-40 bg-surface z-50"
 			>
-				<a
-					href={images[0]}
+			<a
+					href={resources[0].src}
 					download
 					class="save-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm"
 				>
@@ -79,7 +83,7 @@ const hasMultiple = images.length > 1;
 		{
 			hasMultiple && (
 				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none counter z-10">
-					1/{images.length}
+					1/{resources.length}
 				</div>
 			)
 		}
@@ -88,13 +92,25 @@ const hasMultiple = images.length > 1;
 			class="carousel-container scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
 		>
 			{
-				images.map((img) => (
-					<img
-						src={img}
-						draggable="false"
-						class="carousel-item min-w-full w-full h-full object-cover snap-start shrink-0 select-none"
-					/>
-				))
+				resources.map((res) =>
+					res.type === "video" ? (
+						<video
+							src={res.src}
+							autoplay
+							loop
+							muted
+							playsinline
+							draggable="false"
+							class="carousel-item min-w-full w-full h-full object-cover snap-start shrink-0 select-none"
+						/>
+					) : (
+						<img
+							src={res.src}
+							draggable="false"
+							class="carousel-item min-w-full w-full h-full object-cover snap-start shrink-0 select-none"
+						/>
+					),
+				)
 			}
 		</div>
 
@@ -116,7 +132,7 @@ const hasMultiple = images.length > 1;
 		{
 			hasMultiple && (
 				<div class="flex justify-center gap-1.5 mb-3 indicators">
-					{images.map((_, i) => (
+					{resources.map((_, i) => (
 						<div
 							class={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === 0 ? "bg-brand-sage" : "bg-ink-muted"}`}
 						/>
@@ -130,12 +146,26 @@ const hasMultiple = images.length > 1;
 		<p class="text-ink-secondary text-xs mt-2">
 			{formatRelativeDate(date)}
 		</p>
+		{
+			tags && tags.length > 0 && (
+				<div class="flex flex-wrap gap-1.5 mt-2">
+					{tags.map((tagValue) => {
+						const tag = TAG_CATALOG.find((t) => t.value === tagValue);
+						return tag ? (
+							<span class={`text-xs px-2 py-0.5 rounded-full ${tag.color}`}>
+								{tag.icon} {tag.name}
+							</span>
+						) : null;
+					})}
+				</div>
+			)
+		}
 	</div>
 </article>
 
 <GalleryModal
 	id={id}
-	images={images}
+	resources={resources}
 	username={username}
 	date={date}
 	description={description}
@@ -157,8 +187,11 @@ const hasMultiple = images.length > 1;
 				article.setAttribute("data-initialized", "true");
 
 				const postId = article.getAttribute("data-post-id");
-				const images = JSON.parse(
-					article.getAttribute("data-images") || "[]",
+				const resources = JSON.parse(
+					article.getAttribute("data-resources") || "[]",
+				);
+				const imageSrcs = resources.map(
+					(r: { src: string }) => r.src,
 				);
 				const container = article.querySelector(
 					".carousel-container",
@@ -181,14 +214,33 @@ const hasMultiple = images.length > 1;
 
 				shareBtn?.addEventListener("click", (e) => {
 					e.stopPropagation();
-					const postUrl = `${window.location.origin}${window.location.pathname}?id=${postId}`;
-					navigator.clipboard
-						.writeText(postUrl)
-						.then(() => alert("¡Enlace copiado!"));
+					const postUrl = `${window.location.origin}/gallery/${postId}`;
+					navigator.clipboard.writeText(postUrl).then(() => showToast("¡Enlace copiado!"));
 					article
 						.querySelector(".options-menu")
 						?.classList.add("hidden");
 				});
+
+				function showToast(message: string) {
+					let toast = document.getElementById("global-toast");
+					if (!toast) {
+						toast = document.createElement("div");
+						toast.id = "global-toast";
+						toast.className =
+							"fixed bottom-8 left-1/2 -translate-x-1/2 bg-brand-sage text-on-dark rounded-full px-6 py-3 shadow-soft font-body text-sm z-200 opacity-0 translate-y-2 transition-all duration-300 ease-out pointer-events-none";
+						document.body.appendChild(toast);
+					}
+					toast.textContent = message;
+					clearTimeout(Number(toast.dataset.timer));
+					requestAnimationFrame(() => {
+						toast!.classList.remove("opacity-0", "translate-y-2");
+						toast!.classList.add("opacity-100", "translate-y-0");
+					});
+					toast.dataset.timer = setTimeout(() => {
+						toast!.classList.remove("opacity-100", "translate-y-0");
+						toast!.classList.add("opacity-0", "translate-y-2");
+					}, 3000).toString();
+				}
 
 				if (!container) return;
 
@@ -214,7 +266,7 @@ const hasMultiple = images.length > 1;
 					);
 
 					if (counter) {
-						counter.textContent = `${index + 1}/${images.length}`;
+						counter.textContent = `${index + 1}/${imageSrcs.length}`;
 						counter.style.opacity = "1";
 						clearTimeout(
 							Number((article as HTMLElement).dataset.timer),
@@ -231,7 +283,7 @@ const hasMultiple = images.length > 1;
 						dot.className = `w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === index ? "bg-brand-sage" : "bg-ink-muted"}`;
 					});
 
-					if (saveBtn && images[index]) saveBtn.href = images[index];
+					if (saveBtn && imageSrcs[index]) saveBtn.href = imageSrcs[index];
 				});
 
 				// 3. Botones y Clic para Modal

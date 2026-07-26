@@ -1,18 +1,19 @@
 ---
 // src/components/GalleryModal.astro
 import { formatRelativeDate } from "../utils/dateUtils";
+import type { PostResource } from "../data/galleryPosts";
 
 interface Props {
     id: number | string;
-    images: string[];
+    resources: PostResource[];
     username: string | null;
     date: string;
     description: string;
 }
 
-const { id, images, username, date, description } = Astro.props;
+const { id, resources, username, date, description } = Astro.props;
 const dialogId = `extended-${id}`;
-const hasMultiple = images.length > 1;
+const hasMultiple = resources.length > 1;
 ---
 
 <div
@@ -28,9 +29,23 @@ const hasMultiple = images.length > 1;
     <div class="relative w-full max-w-5xl bg-surface rounded-md shadow-soft overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh] m-auto" onclick="event.stopPropagation()">
         <div class="relative w-full md:w-[60%] bg-black flex items-center justify-center group overflow-hidden">
             <div class="carousel-container-modal scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth">
-                {images.map((img) => (
-                    <img src={img} class="min-w-full w-full h-full object-contain snap-center shrink-0" />
-                ))}
+                {resources.map((res) =>
+                    res.type === "video" ? (
+                        <video
+                            src={res.src}
+                            autoplay
+                            loop
+                            muted
+                            playsinline
+                            class="min-w-full w-full h-full object-contain snap-center shrink-0"
+                        />
+                    ) : (
+                        <img
+                            src={res.src}
+                            class="min-w-full w-full h-full object-contain snap-center shrink-0"
+                        />
+                    )
+                )}
             </div>
             {hasMultiple && (
                 <>

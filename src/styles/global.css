@@ -135,4 +135,8 @@
 		opacity: 1 !important;
 		transform: translate(-50%, -5px) !important;
 	}
+	.toast-visible {
+		opacity: 1;
+		transform: translate(-50%, 0);
+	}
 }

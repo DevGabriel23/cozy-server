@@ -1,0 +1,149 @@
+---
+// src/pages/gallery/index.astro
+import GalleryPost from "../../components/GalleryPost.astro";
+import Layout from "../../layouts/Layout.astro";
+import { galleryPosts } from "../../data/galleryPosts";
+import { TAG_CATALOG } from "../../data/tags";
+
+galleryPosts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+---
+
+<Layout
+	title="Galería - Cozy Server"
+	description="Capturas y momentos especiales de nuestra comunidad en Cozy Server."
+>
+	<main class="max-w-6xl mx-auto px-6 py-20">
+		<header class="text-center mb-16 mt-8">
+			<h1 class="font-heading text-5xl text-ink-primary mb-6">
+				Momentos Cozy
+			</h1>
+			<p class="text-ink-secondary text-lg max-w-2xl mx-auto">
+				Una pequeña selección de los recuerdos más bonitos compartidos
+				por nuestra comunidad. ¿Tienes una captura épica? ¡Compártela en
+				nuestro Discord!
+			</p>
+		</header>
+
+		<div class="flex flex-wrap justify-center gap-2 mb-10 " id="filter-bar">
+			{
+				TAG_CATALOG.map((tag) => (
+					<button
+						data-filter={tag.value}
+						class={`filter-btn text-sm px-3 py-1.5 rounded-full border border-hairline bg-surface text-ink-secondary transition-all duration-200 hover:bg-surface-hover hover:shadow-soft`}
+					>
+						{tag.icon} {tag.name}
+					</button>
+				))
+			}
+		</div>
+
+		{
+			galleryPosts.length > 0 ? (
+				<section class="grid grid-cols-1 gap-8 max-w-lg mx-auto">
+					{galleryPosts.map((post) => (
+						<GalleryPost {...post} />
+					))}
+				</section>
+			) : (
+				<div class="text-center py-20 bg-surface rounded-lg border border-hairline">
+					<p class="text-ink-secondary text-lg">
+						🌱 Aún estamos preparando la galería. <br />
+						¡Pronto verás aquí los momentos más especiales de
+						nuestra comunidad!
+					</p>
+				</div>
+			)
+		}
+	</main>
+</Layout>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		// Auto-lanzamiento de modales basado en la URL
+		const urlParams = new URLSearchParams(window.location.search);
+		const postId = urlParams.get("id");
+		if (postId) {
+			const modal = document.getElementById(`extended-${postId}`);
+			if (modal) {
+				modal.classList.remove("hidden");
+				modal.classList.add("flex");
+				document.body.style.overflow = "hidden";
+			}
+		}
+
+		// Filtros de tags
+		const filterBar = document.getElementById("filter-bar");
+		if (!filterBar || filterBar.hasAttribute("data-init-filters")) return;
+		filterBar.setAttribute("data-init-filters", "true");
+
+		const filterBtns = filterBar.querySelectorAll<HTMLButtonElement>(".filter-btn");
+		const articles = document.querySelectorAll<HTMLElement>("article.post-card");
+		const activeTags = new Set<string>();
+
+		// Leer tags de la URL al cargar
+		const urlTags = urlParams.get("tags");
+		if (urlTags) {
+			urlTags.split(",").forEach((t) => {
+				const trimmed = t.trim();
+				if (trimmed) activeTags.add(trimmed);
+			});
+			updateFilterUI();
+			applyFilters();
+		}
+
+		filterBtns.forEach((btn) => {
+			btn.addEventListener("click", () => {
+				const tag = btn.getAttribute("data-filter");
+				if (!tag) return;
+
+				if (activeTags.has(tag)) {
+					activeTags.delete(tag);
+				} else {
+					activeTags.add(tag);
+				}
+
+				updateFilterUI();
+				applyFilters();
+				syncURL();
+			});
+		});
+
+		function updateFilterUI() {
+			filterBtns.forEach((btn) => {
+				const tag = btn.getAttribute("data-filter");
+				const isActive = activeTags.has(tag!);
+				btn.classList.toggle("bg-brand-sage", isActive);
+				btn.classList.toggle("text-on-dark", isActive);
+				btn.classList.toggle("border-brand-sage", isActive);
+				btn.classList.toggle("bg-surface", !isActive);
+				btn.classList.toggle("text-ink-secondary", !isActive);
+				btn.classList.toggle("border-hairline", !isActive);
+			});
+		}
+
+		function applyFilters() {
+			articles.forEach((article) => {
+				const postTags: string[] = JSON.parse(
+					article.getAttribute("data-tags") || "[]",
+				);
+				const isVisible =
+					activeTags.size === 0 ||
+					[...activeTags].every((t) => postTags.includes(t));
+				article.style.display = isVisible ? "" : "none";
+			});
+		}
+
+		function syncURL() {
+			const params = new URLSearchParams(window.location.search);
+			if (activeTags.size > 0) {
+				params.set("tags", [...activeTags].join(","));
+			} else {
+				params.delete("tags");
+			}
+			const newURL =
+				window.location.pathname +
+				(params.toString() ? `?${params.toString()}` : "");
+			window.history.pushState({ path: newURL }, "", newURL);
+		}
+	});
+</script>
