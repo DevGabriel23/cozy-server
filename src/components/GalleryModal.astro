@@ -2,107 +2,152 @@
 // src/components/GalleryModal.astro
 import { formatRelativeDate } from "../utils/dateUtils";
 import type { PostResource } from "../data/galleryPosts";
+import UserAvatar from "./UserAvatar.astro";
 
 interface Props {
-    id: number | string;
-    resources: PostResource[];
-    username: string | null;
-    date: string;
-    description: string;
+	id: number | string;
+	resources: PostResource[];
+	username: string | null;
+	date: string;
+	description: string;
 }
 
 const { id, resources, username, date, description } = Astro.props;
 const dialogId = `extended-${id}`;
 const hasMultiple = resources.length > 1;
+const hasVideo = resources.some((res) => res.type === "video");
 ---
 
 <div
-    id={dialogId}
-    class="extended-dialog fixed inset-0 z-100 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
-    onclick={`
+	id={dialogId}
+	class="extended-dialog fixed inset-0 z-100 hidden items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+	onclick={`
         this.classList.add('hidden'); 
         this.classList.remove('flex'); 
         document.body.style.overflow = ''; 
         window.history.replaceState({}, '', window.location.pathname);
     `}
 >
-    <div class="relative w-full max-w-5xl bg-surface rounded-md shadow-soft overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh] m-auto" onclick="event.stopPropagation()">
-        <div class="relative w-full md:w-[60%] bg-black flex items-center justify-center group overflow-hidden">
-            <div class="carousel-container-modal scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth">
-                {resources.map((res) =>
-                    res.type === "video" ? (
-                        <video
-                            src={res.src}
-                            autoplay
-                            loop
-                            muted
-                            playsinline
-                            class="min-w-full w-full h-full object-contain snap-center shrink-0"
-                        />
-                    ) : (
-                        <img
-                            src={res.src}
-                            class="min-w-full w-full h-full object-contain snap-center shrink-0"
-                        />
-                    )
-                )}
-            </div>
-            {hasMultiple && (
-                <>
-                    <button class="absolute w-10 h-10 left-4 top-1/2 -translate-y-1/2 bg-surface/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn-modal z-10">❮</button>
-                    <button class="absolute w-10 h-10 right-4 top-1/2 -translate-y-1/2 bg-surface/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn-modal z-10">❯</button>
-                </>
-            )}
-        </div>
+	<div
+		class="relative w-full max-w-5xl bg-surface rounded-md shadow-soft overflow-hidden flex flex-col md:flex-row h-full max-h-[85vh] m-auto"
+		onclick="event.stopPropagation()"
+	>
+		<div
+			class="relative w-full md:w-[60%] bg-black flex items-center justify-center group overflow-hidden"
+		>
+			{
+				hasVideo && (
+					<button
+						class="mute-toggle-btn absolute bottom-4 right-4 bg-black/60 text-white p-2.5 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-20 shadow-md hover:scale-110 transform cursor-pointer hidden"
+						aria-label="Silenciar / Activar sonido"
+					>
+						<svg
+							class="w-5 h-5 icon-muted"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<path d="M11 5L6 9H2v6h4l5 4V5z" />
+							<line x1="23" y1="9" x2="17" y2="15" />
+							<line x1="17" y1="9" x2="23" y2="15" />
+						</svg>
+						<svg
+							class="w-5 h-5 icon-unmuted hidden"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<path d="M11 5L6 9H2v6h4l5 4V5z" />
+							<path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+						</svg>
+					</button>
+				)
+			}
 
-        <div class="w-full md:w-[40%] p-6 flex flex-col border-l border-hairline">
-            <div class="flex items-center justify-between mb-6">
-                <div class="flex items-center gap-3">
-                    <div class="rounded-full bg-brand-sage w-10 h-10 flex items-center justify-center text-on-dark text-sm font-bold">
-                        {username?.slice(0, 2).toUpperCase()}
-                    </div>
-                    <h4 class="font-bold text-ink-primary text-lg">{username}</h4>
-                </div>
-                <button
-                    onclick={`
+			<div
+				class="carousel-container-modal scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth"
+			>
+				{
+					resources.map((res) =>
+						res.type === "video" ? (
+							<video
+								src={res.src}
+								autoplay
+								loop
+								muted
+								playsinline
+								class="min-w-full w-full h-full object-contain snap-center shrink-0"
+							/>
+						) : (
+							<img
+								src={res.src}
+								class="min-w-full w-full h-full object-contain snap-center shrink-0"
+							/>
+						),
+					)
+				}
+			</div>
+			{
+				hasMultiple && (
+					<>
+						<button class="absolute w-10 h-10 left-4 top-1/2 -translate-y-1/2 bg-surface/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn-modal z-10 text-ink-primary cursor-pointer">
+							❮
+						</button>
+						<button class="absolute w-10 h-10 right-4 top-1/2 -translate-y-1/2 bg-surface/80 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn-modal z-10 text-ink-primary cursor-pointer">
+							❯
+						</button>
+					</>
+				)
+			}
+		</div>
+
+		<div
+			class="w-full md:w-[40%] p-6 flex flex-col border-l border-hairline"
+		>
+			<div class="flex items-center justify-between mb-6">
+				<div class="flex items-center gap-3">
+					<UserAvatar username={username ?? "User"} size="md" />
+					<h4 class="font-bold text-ink-primary text-lg">
+						{username ?? "Desconocido"}
+					</h4>
+				</div>
+				<button
+					onclick={`
                         const modal = document.getElementById('${dialogId}');
                         modal.classList.add('hidden');
                         modal.classList.remove('flex');
                         document.body.style.overflow = '';
                         window.history.replaceState({}, '', window.location.pathname);
                     `}
-                    class="text-ink-muted hover:text-ink-primary text-xl"
-                >✕</button>
-            </div>
+					class="text-ink-muted hover:text-ink-primary text-xl cursor-pointer"
+					>✕</button
+				>
+			</div>
 
-            <div class="overflow-y-auto flex-1 pr-2">
-                <p class="text-ink-primary text-sm font-body">
-                    <span class="font-bold mr-2">{username}</span>{description}
-                </p>
-            </div>
-            <div class="mt-4 pt-4 border-t border-hairline">
-                <p class="text-ink-secondary text-sm">{formatRelativeDate(date)}</p>
-            </div>
-        </div>
-    </div>
+			<div class="overflow-y-auto flex-1 pr-2">
+				<p class="text-ink-primary text-sm font-body">
+					<span class="font-bold mr-2">{username}</span>{description}
+				</p>
+			</div>
+			<div class="mt-4 pt-4 border-t border-hairline">
+				<p class="text-ink-secondary text-sm">
+					{formatRelativeDate(date)}
+				</p>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script>
-    // Lógica encapsulada solo para los modales
-    document.addEventListener("astro:page-load", () => {
-        document.querySelectorAll(".extended-dialog").forEach((dialog) => {
-            if (dialog.hasAttribute("data-init-modal")) return;
-            dialog.setAttribute("data-init-modal", "true");
+	import { initMediaControllers } from "../utils/mediaController";
 
-            const container = dialog.querySelector(".carousel-container-modal");
-            dialog.querySelector(".next-btn-modal")?.addEventListener("click", (e) => {
-                e.stopPropagation();
-                container?.scrollBy({ left: container.clientWidth, behavior: "smooth" });
-            });
-            dialog.querySelector(".prev-btn-modal")?.addEventListener("click", (e) => {
-                e.stopPropagation();
-                container?.scrollBy({ left: -container.clientWidth, behavior: "smooth" });
-            });
-        });
-    });
+	document.addEventListener("astro:page-load", () => {
+		initMediaControllers();
+	});
+
+	document.addEventListener("DOMContentLoaded", () => {
+		initMediaControllers();
+	});
 </script>

@@ -20,7 +20,7 @@ const hasMultiple = resources.length > 1;
 ---
 
 <article
-	class={`overflow-hidden relative post-card bg-surface rounded-md border border-hairline shadow-sm`}
+	class={`overflow-hidden relative post-card bg-surface rounded-md border border-hairline shadow-sm group`}
 	data-resources={JSON.stringify(resources)}
 	data-post-id={id}
 	data-tags={tags ? JSON.stringify(tags) : "[]"}
@@ -37,19 +37,19 @@ const hasMultiple = resources.length > 1;
 
 		<div class="ml-auto relative">
 			<button
-				class="options-btn p-2 hover:bg-ink-muted/10 rounded-full cursor-pointer"
+				class="options-btn p-2 hover:bg-ink-muted/10 rounded-full cursor-pointer text-ink-primary"
+				aria-label="Opciones de publicación"
 			>
 				<svg
 					width="20"
 					height="20"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					><circle cx="12" cy="12" r="2"></circle><circle
-						cx="12"
-						cy="5"
-						r="2"></circle><circle cx="12" cy="19" r="2"
-					></circle></svg
 				>
+					<circle cx="12" cy="12" r="2"></circle>
+					<circle cx="12" cy="5" r="2"></circle>
+					<circle cx="12" cy="19" r="2"></circle>
+				</svg>
 			</button>
 
 			<div
@@ -57,39 +57,40 @@ const hasMultiple = resources.length > 1;
 				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-lg shadow-soft border border-hairline w-40 bg-surface z-50"
 			>
 				<a
-					href={resources[0].src}
+					href={resources[0]?.src ?? "#"}
 					download
-					class="save-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm"
+					class="save-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm text-ink-primary"
 				>
 					<IconDownload
 						class="w-5 h-5"
 						aria-label="Descargar imagen"
 					/>
-					Descargar</a
-				>
+					Descargar
+				</a>
 				<button
-					class="share-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm w-full text-left"
+					class="share-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm w-full text-left text-ink-primary cursor-pointer"
 				>
 					<IconLink class="w-5 h-5" aria-label="Compartir imagen" />
-					Compartir</button
-				>
+					Compartir
+				</button>
 			</div>
 		</div>
 	</div>
 
 	<div
-		class={`relative group overflow-hidden aspect-square ${isDetailView ? "md:aspect-video" : ""}`}
+		class={`relative aspect-square overflow-hidden bg-surface ${isDetailView ? "md:aspect-video" : ""}`}
 	>
 		{
 			hasMultiple && (
-				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none counter z-10">
+				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-body font-medium pointer-events-none counter z-10">
 					1/{resources.length}
 				</div>
 			)
 		}
 
 		<button
-			class="audio-btn absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-10 hidden shadow-md hover:scale-110 transform cursor-pointer"
+			class="audio-btn mute-toggle-btn absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-10 hidden shadow-md hover:scale-110 transform cursor-pointer"
+			aria-label="Silenciar / Activar sonido"
 		>
 			<!-- Icono de Muted -->
 			<svg
@@ -119,7 +120,7 @@ const hasMultiple = resources.length > 1;
 		</button>
 
 		<div
-			class="carousel-container scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
+			class={`carousel-container scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth ${!isDetailView ? "cursor-pointer" : ""}`}
 		>
 			{
 				resources.map((res) =>
@@ -147,10 +148,16 @@ const hasMultiple = resources.length > 1;
 		{
 			hasMultiple && (
 				<>
-					<button class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn z-10 shadow-md">
+					<button
+						class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform hover:scale-110 prev-btn z-10 shadow-md cursor-pointer text-ink-primary"
+						aria-label="Anterior"
+					>
 						❮
 					</button>
-					<button class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn z-10 shadow-md">
+					<button
+						class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform hover:scale-110 next-btn z-10 shadow-md cursor-pointer text-ink-primary"
+						aria-label="Siguiente"
+					>
 						❯
 					</button>
 				</>
@@ -181,7 +188,7 @@ const hasMultiple = resources.length > 1;
 						</h4>
 
 						<a
-							href={resources[0].src}
+							href={resources[0]?.src ?? "#"}
 							download
 							class="detail-download-btn ml-auto inline-flex items-center gap-2 px-4 py-4 sm:py-2 bg-brand-sage/15 text-brand-sage-deep hover:bg-brand-sage hover:text-on-dark rounded-full text-sm font-bold transition-colors shadow-sm"
 						>
@@ -204,16 +211,17 @@ const hasMultiple = resources.length > 1;
 		<p class="text-ink-secondary text-xs mt-2">
 			{formatRelativeDate(date)}
 		</p>
+
 		{
 			tags && tags.length > 0 && (
 				<div class="flex flex-wrap gap-1.5 mt-2">
-					{tags.map((tagValue) => {
+					{tags.map((tagSlug) => {
 						const tag = TAG_CATALOG.find(
-							(t) => t.value === tagValue,
+							(t) => t.value === tagSlug,
 						);
 						return tag ? (
 							<span
-								class={`text-xs px-2 py-0.5 rounded-full ${tag.color}`}
+								class={`text-xs px-2.5 py-0.5 rounded-full font-body font-medium ${tag.color}`}
 							>
 								{tag.icon} {tag.name}
 							</span>
@@ -225,16 +233,24 @@ const hasMultiple = resources.length > 1;
 	</div>
 </article>
 
-<GalleryModal
-	id={id}
-	resources={resources}
-	username={username}
-	date={date}
-	description={description}
-/>
+{
+	!isDetailView && (
+		<GalleryModal
+			id={id}
+			resources={resources}
+			username={username}
+			date={date}
+			description={description}
+		/>
+	)
+}
 
 <script>
+	import { initMediaControllers, updateActiveSlideMedia } from "../utils/mediaController";
+
 	document.addEventListener("astro:page-load", () => {
+		initMediaControllers();
+
 		// Cierra los menús globales al hacer clic fuera
 		window.addEventListener("click", () =>
 			document
@@ -243,7 +259,7 @@ const hasMultiple = resources.length > 1;
 		);
 
 		document
-			.querySelectorAll("article[data-post-id]")
+			.querySelectorAll<HTMLElement>("article[data-post-id]")
 			.forEach((article) => {
 				if (article.hasAttribute("data-initialized")) return;
 				article.setAttribute("data-initialized", "true");
@@ -314,10 +330,6 @@ const hasMultiple = resources.length > 1;
 				const detailDownloadBtn = article.querySelector(
 					".detail-download-btn",
 				) as HTMLAnchorElement;
-				const audioBtn = article.querySelector(
-					".audio-btn",
-				) as HTMLButtonElement;
-				const videos = article.querySelectorAll("video");
 				const saveBtn = article.querySelector(
 					".save-btn",
 				) as HTMLAnchorElement;
@@ -333,42 +345,9 @@ const hasMultiple = resources.length > 1;
 					const index = Math.round(
 						container.scrollLeft / container.clientWidth,
 					);
-					const currentResource = resources[index];
 
 					if (detailDownloadBtn && imageSrcs[index]) {
 						detailDownloadBtn.href = imageSrcs[index];
-					}
-
-					videos.forEach((vid, i) => {
-						if (i !== index) vid.muted = true; // Silencia los que no ves
-					});
-
-					// Mostrar/Ocultar el botón de audio dependiendo si es video
-					if (currentResource.type === "video") {
-						audioBtn?.classList.remove("hidden");
-						// Actualizar UI del icono de audio
-						const currentVideo = container.children[
-							index
-						] as HTMLVideoElement;
-						if (currentVideo && currentVideo.tagName === "VIDEO") {
-							if (currentVideo.muted) {
-								audioBtn
-									.querySelector(".icon-muted")
-									?.classList.remove("hidden");
-								audioBtn
-									.querySelector(".icon-unmuted")
-									?.classList.add("hidden");
-							} else {
-								audioBtn
-									.querySelector(".icon-muted")
-									?.classList.add("hidden");
-								audioBtn
-									.querySelector(".icon-unmuted")
-									?.classList.remove("hidden");
-							}
-						}
-					} else {
-						audioBtn?.classList.add("hidden");
 					}
 
 					if (counter) {
@@ -393,57 +372,6 @@ const hasMultiple = resources.length > 1;
 						saveBtn.href = imageSrcs[index];
 				});
 
-				// 3. Botones y Clic para Modal
-				article
-					.querySelector(".next-btn")
-					?.addEventListener("click", (e) => {
-						e.stopPropagation();
-						container.scrollBy({
-							left: container.clientWidth,
-							behavior: "smooth",
-						});
-					});
-
-				article
-					.querySelector(".prev-btn")
-					?.addEventListener("click", (e) => {
-						e.stopPropagation();
-						container.scrollBy({
-							left: -container.clientWidth,
-							behavior: "smooth",
-						});
-					});
-
-				audioBtn?.addEventListener("click", (e) => {
-					e.stopPropagation(); // Evita que se abra el modal
-					const index = Math.round(
-						container.scrollLeft / container.clientWidth,
-					);
-					const currentVideo = container.children[
-						index
-					] as HTMLVideoElement;
-
-					if (currentVideo && currentVideo.tagName === "VIDEO") {
-						currentVideo.muted = !currentVideo.muted; // Alterna estado
-
-						if (currentVideo.muted) {
-							audioBtn
-								.querySelector(".icon-muted")
-								?.classList.remove("hidden");
-							audioBtn
-								.querySelector(".icon-unmuted")
-								?.classList.add("hidden");
-						} else {
-							audioBtn
-								.querySelector(".icon-muted")
-								?.classList.add("hidden");
-							audioBtn
-								.querySelector(".icon-unmuted")
-								?.classList.remove("hidden");
-						}
-					}
-				});
-
 				container.addEventListener("click", () => {
 					const isDetail =
 						article.getAttribute("data-is-detail") === "true";
@@ -456,6 +384,12 @@ const hasMultiple = resources.length > 1;
 						modal.classList.remove("hidden");
 						modal.classList.add("flex");
 						document.body.style.overflow = "hidden";
+						const modalContainer = modal.querySelector(
+							".carousel-container-modal",
+						) as HTMLElement | null;
+						if (modalContainer) {
+							updateActiveSlideMedia(modal, modalContainer);
+						}
 					}
 				});
 			});
