@@ -90,6 +90,36 @@ const hasMultiple = resources.length > 1;
 			)
 		}
 
+		<button
+			class="audio-btn absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-10 hidden shadow-md hover:scale-110 transform cursor-pointer"
+		>
+			<!-- Icono de Muted -->
+			<svg
+				class="w-4 h-4 icon-muted"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line
+					x1="23"
+					y1="9"
+					x2="17"
+					y2="15"></line><line x1="17" y1="9" x2="23" y2="15"
+				></line></svg
+			>
+			<!-- Icono de Unmuted -->
+			<svg
+				class="w-4 h-4 icon-unmuted hidden"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path
+					d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"
+				></path></svg
+			>
+		</button>
+
 		<div
 			class="carousel-container scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
 		>
@@ -153,6 +183,15 @@ const hasMultiple = resources.length > 1;
 						<h4 class="font-bold text-ink-primary text-sm">
 							{username ?? "Desconocido"}
 						</h4>
+
+						<a
+							href={resources[0].src}
+							download
+							class="detail-download-btn ml-auto inline-flex items-center gap-2 px-4 py-4 sm:py-2 bg-brand-sage/15 text-brand-sage-deep hover:bg-brand-sage hover:text-on-dark rounded-full text-sm font-bold transition-colors shadow-sm"
+						>
+							<IconDownload class="w-4 h-4" />
+							<span class="hidden sm:inline">Descargar</span>
+						</a>
 					</div>
 					<p class="text-ink-primary text-sm font-body">
 						{description}
@@ -276,6 +315,13 @@ const hasMultiple = resources.length > 1;
 					".counter",
 				) as HTMLElement;
 				const dots = article.querySelectorAll(".indicators > div");
+				const detailDownloadBtn = article.querySelector(
+					".detail-download-btn",
+				) as HTMLAnchorElement;
+				const audioBtn = article.querySelector(
+					".audio-btn",
+				) as HTMLButtonElement;
+				const videos = article.querySelectorAll("video");
 				const saveBtn = article.querySelector(
 					".save-btn",
 				) as HTMLAnchorElement;
@@ -291,6 +337,43 @@ const hasMultiple = resources.length > 1;
 					const index = Math.round(
 						container.scrollLeft / container.clientWidth,
 					);
+					const currentResource = resources[index];
+
+					if (detailDownloadBtn && imageSrcs[index]) {
+						detailDownloadBtn.href = imageSrcs[index];
+					}
+
+					videos.forEach((vid, i) => {
+						if (i !== index) vid.muted = true; // Silencia los que no ves
+					});
+
+					// Mostrar/Ocultar el botón de audio dependiendo si es video
+					if (currentResource.type === "video") {
+						audioBtn?.classList.remove("hidden");
+						// Actualizar UI del icono de audio
+						const currentVideo = container.children[
+							index
+						] as HTMLVideoElement;
+						if (currentVideo && currentVideo.tagName === "VIDEO") {
+							if (currentVideo.muted) {
+								audioBtn
+									.querySelector(".icon-muted")
+									?.classList.remove("hidden");
+								audioBtn
+									.querySelector(".icon-unmuted")
+									?.classList.add("hidden");
+							} else {
+								audioBtn
+									.querySelector(".icon-muted")
+									?.classList.add("hidden");
+								audioBtn
+									.querySelector(".icon-unmuted")
+									?.classList.remove("hidden");
+							}
+						}
+					} else {
+						audioBtn?.classList.add("hidden");
+					}
 
 					if (counter) {
 						counter.textContent = `${index + 1}/${imageSrcs.length}`;
@@ -334,6 +417,36 @@ const hasMultiple = resources.length > 1;
 							behavior: "smooth",
 						});
 					});
+
+				audioBtn?.addEventListener("click", (e) => {
+					e.stopPropagation(); // Evita que se abra el modal
+					const index = Math.round(
+						container.scrollLeft / container.clientWidth,
+					);
+					const currentVideo = container.children[
+						index
+					] as HTMLVideoElement;
+
+					if (currentVideo && currentVideo.tagName === "VIDEO") {
+						currentVideo.muted = !currentVideo.muted; // Alterna estado
+
+						if (currentVideo.muted) {
+							audioBtn
+								.querySelector(".icon-muted")
+								?.classList.remove("hidden");
+							audioBtn
+								.querySelector(".icon-unmuted")
+								?.classList.add("hidden");
+						} else {
+							audioBtn
+								.querySelector(".icon-muted")
+								?.classList.add("hidden");
+							audioBtn
+								.querySelector(".icon-unmuted")
+								?.classList.remove("hidden");
+						}
+					}
+				});
 
 				container.addEventListener("click", () => {
 					const isDetail =
