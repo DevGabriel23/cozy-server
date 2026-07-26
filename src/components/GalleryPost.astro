@@ -19,13 +19,13 @@ const hasMultiple = images.length > 1;
 ---
 
 <article
-	class="bg-surface rounded-2xl overflow-hidden border border-hairline shadow-sm relative post-card"
+	class="bg-surface rounded-md overflow-hidden border border-hairline shadow-sm relative post-card"
 	data-images={JSON.stringify(images)}
 	data-post-id={id}
 >
 	<div class="flex items-center gap-3 p-3 relative z-10">
 		<div
-			class="rounded-full bg-brand-sage text-white font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner"
+			class="rounded-full bg-brand-sage text-on-dark font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner"
 		>
 			{username?.slice(0, 2).toUpperCase() ?? "??"}
 		</div>
@@ -52,12 +52,12 @@ const hasMultiple = images.length > 1;
 
 			<div
 				id={menuId}
-				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-xl shadow-xl border border-hairline w-40 bg-surface z-50"
+				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-lg shadow-soft border border-hairline w-40 bg-surface z-50"
 			>
 				<a
 					href={images[0]}
 					download
-					class="save-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm"
+					class="save-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm"
 				>
 					<IconDownload
 						class="w-5 h-5"
@@ -66,7 +66,7 @@ const hasMultiple = images.length > 1;
 					Descargar</a
 				>
 				<button
-					class="share-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm w-full text-left"
+					class="share-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm w-full text-left"
 				>
 					<IconLink class="w-5 h-5" aria-label="Compartir imagen" />
 					Compartir</button
@@ -85,7 +85,7 @@ const hasMultiple = images.length > 1;
 		}
 
 		<div
-			class="carousel-container flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
+			class="carousel-container scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
 		>
 			{
 				images.map((img) => (
@@ -101,10 +101,10 @@ const hasMultiple = images.length > 1;
 		{
 			hasMultiple && (
 				<>
-					<button class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn z-10 shadow-md">
+					<button class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn z-10 shadow-md">
 						❮
 					</button>
-					<button class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn z-10 shadow-md">
+					<button class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn z-10 shadow-md">
 						❯
 					</button>
 				</>
@@ -140,16 +140,6 @@ const hasMultiple = images.length > 1;
 	date={date}
 	description={description}
 />
-
-<style>
-	.carousel-container {
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-	.carousel-container::-webkit-scrollbar {
-		display: none;
-	}
-</style>
 
 <script>
 	document.addEventListener("astro:page-load", () => {

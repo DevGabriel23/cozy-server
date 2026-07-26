@@ -124,6 +124,13 @@
 }
 
 @layer utilities {
+	.scrollbar-hidden {
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+	.scrollbar-hidden::-webkit-scrollbar {
+		display: none;
+	}
 	.copy-feedback.visible {
 		opacity: 1 !important;
 		transform: translate(-50%, -5px) !important;

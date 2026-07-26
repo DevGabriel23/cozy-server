@@ -4,7 +4,7 @@
 
 <form
 	id="report-form"
-	class="space-y-4 max-w-lg mx-auto bg-surface p-8 rounded-[32px] border border-hairline"
+	class="space-y-4 max-w-lg mx-auto bg-surface p-8 rounded-xl border border-hairline"
 >
 	<h3 class="font-heading text-2xl text-ink-primary">Nuevo Reporte</h3>
 
@@ -52,7 +52,7 @@
 		const createToggle = (name, label, options) => `
             <div class="flex items-center justify-between p-2">
                 <span class="text-ink-secondary text-sm">${label}</span>
-                <div class="flex bg-surface-dark rounded-full p-1 border border-hairline toggle-group">
+                <div class="flex bg-surface-hover rounded-full p-1 border border-hairline toggle-group">
                     ${options
 						.map(
 							(opt, i) => `
