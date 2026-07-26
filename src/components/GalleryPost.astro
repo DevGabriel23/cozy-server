@@ -1,11 +1,12 @@
 ---
 // src/components/GalleryPost.astro
 import { formatRelativeDate } from "../utils/dateUtils";
-import type { GalleryPostData, PostResource } from "../data/galleryPosts";
+import type { GalleryPostData } from "../data/galleryPosts";
 import { TAG_CATALOG } from "../data/tags";
 import GalleryModal from "./GalleryModal.astro";
 import IconDownload from "./icons/IconDownload.astro";
 import IconLink from "./icons/IconLink.astro";
+import UserAvatar from "./UserAvatar.astro";
 
 interface Props {
 	post: GalleryPostData;
@@ -23,16 +24,13 @@ const hasMultiple = resources.length > 1;
 	data-resources={JSON.stringify(resources)}
 	data-post-id={id}
 	data-tags={tags ? JSON.stringify(tags) : "[]"}
+	data-username={username?.toLowerCase() ?? "desconocido"}
 	data-is-detail={isDetailView ? "true" : "false"}
 >
 	<div
 		class={`items-center gap-3 p-3 relative z-10 ${isDetailView ? "hidden" : "flex"}`}
 	>
-		<div
-			class="rounded-full bg-brand-sage text-on-dark font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner"
-		>
-			{username?.slice(0, 2).toUpperCase() ?? "??"}
-		</div>
+		<UserAvatar username={username} size="md" />
 		<h4 class="font-bold text-ink-primary text-sm">
 			{username ?? "Desconocido"}
 		</h4>
@@ -177,9 +175,7 @@ const hasMultiple = resources.length > 1;
 			isDetailView ? (
 				<div>
 					<div class="flex items-center gap-3 relative mb-3">
-						<div class="rounded-full bg-brand-sage text-on-dark font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner">
-							{username?.slice(0, 2).toUpperCase() ?? "??"}
-						</div>
+						<UserAvatar username={username} size="md" />
 						<h4 class="font-bold text-ink-primary text-sm">
 							{username ?? "Desconocido"}
 						</h4>
