@@ -1,12 +1,13 @@
 ---
 // src/pages/addons/[slug].astro
+export const prerender = true;
 import { getCollection, render } from "astro:content";
 
 import Layout from "../../../layouts/Layout.astro";
 import AddonCard from "../../../components/AddonCard.astro";
 import Gallery from "../../../components/Gallery.astro";
 import Prose from "../../../components/Prose.astro";
-import { isRecent } from "../../../utils/dateUtils";
+import NewBadge from "../../../components/NewBadge.astro";
 import { getAddonAssets } from "../../../utils/addonResolver";
 
 export async function getStaticPaths() {
@@ -52,11 +53,9 @@ const ogImage = `/addons/${addon.id}/og.png`;
 					{addon.data.type}
 				</span>
 
-                {isRecent(addon.data.pubDate) && (
-                    <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-800 border border-amber-200 font-body text-sm px-3 py-1 rounded-full">
-                        ✨ Nuevo
-                    </span>
-                )}
+                <NewBadge pubDate={addon.data.pubDate} variant="details" server:defer>
+					<fragment slot="fallback" />
+				</NewBadge>
             </div>
 
 			

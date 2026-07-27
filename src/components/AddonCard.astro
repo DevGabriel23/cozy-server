@@ -3,9 +3,10 @@ interface Props {
 	item: any;
 	variant?: "grid" | "compact"; // Para decidir el nivel de detalle
 }
+
 const { item, variant = "grid" } = Astro.props;
 import { getAddonAssets } from "../utils/addonResolver";
-import { isRecent } from "../utils/dateUtils";
+import NewBadge from "./NewBadge.astro";
 import { generateAddonImageFallback } from "../utils/imageUtils";
 
 const assets = getAddonAssets(item.id);
@@ -23,15 +24,9 @@ const finalImage = assets.cover || generateAddonImageFallback(item);
 			class="w-full h-full object-cover block group-hover:scale-105 transition-transform duration-500 ease-out"
 		/>
 
-		{
-			isRecent(item.data.pubDate) && (
-				<span
-					class={`absolute top-3 right-3 bg-amber-100 text-amber-800 border border-amber-200 backdrop-blur-sm font-bold px-3 py-1.5 rounded-full shadow-sm ${variant === "grid" ? "text-sm" : "text-xs"}`}
-				>
-					✨ Nuevo
-				</span>
-			)
-		}
+		<NewBadge pubDate={item.data.pubDate} variant={variant} server:defer>
+			<fragment slot="fallback" />
+		</NewBadge>
 	</div>
 
 	<div

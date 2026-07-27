@@ -1,5 +1,7 @@
 ---
 // src/pages/gallery/[id].astro
+export const prerender = true;
+
 import Layout from "../../layouts/Layout.astro";
 import GalleryPost from "../../components/GalleryPost.astro";
 import { galleryPosts } from "../../data/galleryPosts";

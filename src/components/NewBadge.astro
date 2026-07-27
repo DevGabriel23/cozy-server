@@ -1,0 +1,29 @@
+---
+// src/components/NewBadge.astro
+import { isRecent } from "../utils/dateUtils";
+
+interface Props {
+	pubDate: Date | string;
+	variant?: "grid" | "compact" | "details";
+}
+
+const { pubDate, variant = "grid" } = Astro.props;
+const isNew = isRecent(pubDate);
+
+if (!isNew) {
+	return null;
+}
+
+// Clases base compartidas
+const baseClasses =
+	"bg-amber-100 text-amber-800 border border-amber-200 backdrop-blur-sm font-bold flex items-center shadow-sm rounded-full";
+
+// Clases específicas según el lugar donde se renderice
+const variantClasses = {
+	grid: "absolute top-3 right-3 px-3 py-1.5 text-xs",
+	compact: "absolute top-3 right-3 px-3 py-1.5 text-xs",
+	details: "px-3 py-1 text-sm",
+}[variant];
+---
+
+<span class={`${baseClasses} ${variantClasses}`}> ✨ Nuevo </span>

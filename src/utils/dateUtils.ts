@@ -41,12 +41,15 @@ export function formatRelativeDate(dateString: string): string {
 
 /**
  * Determina si una fecha es reciente (menos de 7 días).
- * @param date Fecha a evaluar 
+ * @param date Fecha a evaluar en formato Date o string ISO UTC.
  * @returns boolean
  */
-export function isRecent(date: Date): boolean {
+export function isRecent(date: Date | string): boolean {
+    const targetDate = typeof date === 'string' ? new Date(date) : date;
+
     const now = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(now.getDate() - 7);
-    return date >= sevenDaysAgo && date <= now;
+
+    return targetDate.getTime() >= sevenDaysAgo.getTime() && targetDate.getTime() <= now.getTime();
 }
