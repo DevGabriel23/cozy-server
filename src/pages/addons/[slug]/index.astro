@@ -1,11 +1,13 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+// src/pages/addons/[slug].astro
 import { getCollection, render } from "astro:content";
-import AddonCard from "../../components/AddonCard.astro";
-import Gallery from "../../components/Gallery.astro";
-import { getAddonAssets } from "../../utils/addonResolver";
-import Prose from "../../components/Prose.astro";
-import { isRecent } from "../../utils/dateUtils";
+
+import Layout from "../../../layouts/Layout.astro";
+import AddonCard from "../../../components/AddonCard.astro";
+import Gallery from "../../../components/Gallery.astro";
+import Prose from "../../../components/Prose.astro";
+import { isRecent } from "../../../utils/dateUtils";
+import { getAddonAssets } from "../../../utils/addonResolver";
 
 export async function getStaticPaths() {
 	const addons = await getCollection("addons");
@@ -22,12 +24,17 @@ const assets = getAddonAssets(addon.id);
 
 const allAddons = (await getCollection("addons")).filter(
 	(a) => a.id !== addon.id,
+).sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
 );
+
+const ogImage = `/addons/${addon.id}/og.png`;
 ---
 
 <Layout
 	title={`${addon.data.title} - Cozy Server`}
 	description={addon.data.description}
+	image={ogImage}
 >
 	<div class="max-w-180 mx-auto px-4 pt-6 pb-12">
 		<header class="mb-8 mt-18">
