@@ -7,6 +7,7 @@ import GalleryModal from "./GalleryModal.astro";
 import IconDownload from "./icons/IconDownload.astro";
 import IconLink from "./icons/IconLink.astro";
 import UserAvatar from "./UserAvatar.astro";
+import { parseMentions } from "../utils/textUtils";
 
 interface Props {
 	post: GalleryPostData;
@@ -197,13 +198,13 @@ const hasMultiple = resources.length > 1;
 						</a>
 					</div>
 					<p class="text-ink-primary text-sm font-body">
-						{description}
+						<Fragment set:html={parseMentions(description)} />
 					</p>
 				</div>
 			) : (
 				<p class="text-ink-primary text-sm font-body">
 					<span class="font-bold mr-2">{username}</span>
-					{description}
+					<Fragment set:html={parseMentions(description)} />
 				</p>
 			)
 		}

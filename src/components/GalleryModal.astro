@@ -3,6 +3,7 @@
 import { formatRelativeDate } from "../utils/dateUtils";
 import type { PostResource } from "../data/galleryPosts";
 import UserAvatar from "./UserAvatar.astro";
+import { parseMentions } from "../utils/textUtils";
 
 interface Props {
 	id: number | string;
@@ -128,7 +129,8 @@ const hasVideo = resources.some((res) => res.type === "video");
 
 			<div class="overflow-y-auto flex-1 pr-2">
 				<p class="text-ink-primary text-sm font-body">
-					<span class="font-bold mr-2">{username}</span>{description}
+					<span class="font-bold mr-2">{username}</span>
+					<Fragment set:html={parseMentions(description)} />
 				</p>
 			</div>
 			<div class="mt-4 pt-4 border-t border-hairline">

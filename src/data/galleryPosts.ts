@@ -1,3 +1,5 @@
+import { users } from "./users";
+
 // src/data/galleryPosts.ts
 export type ResourceType = "image" | "video";
 
@@ -97,4 +99,97 @@ export const galleryPosts: GalleryPostData[] = [
         description: "Happy GHAST",
         tags: ["moments"],
     },
+    {
+        id: 7,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785111894/post0-1_xnr4gk.jpg", type: "image" }],
+        username: "xsofiis",
+        date: "2026-07-08T03:45:00Z",
+        description: "⛏️",
+        tags: ["buildings"],
+    },
+    {
+        id: 8,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785111998/post0-1_euhypa.jpg", type: "image" }],
+        username: "MattCrowley3995",
+        date: "2026-07-08T04:11:00Z",
+        description: "mueren muchos niños en este lugar",
+        tags: ["fun"],
+    },
+    {
+        id: 9,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112010/post1-1_ixmn6c.jpg", type: "image" }],
+        username: "MattCrowley3995",
+        date: "2026-07-08T04:12:00Z",
+        description: `Y este especimen tan unico? @${getUsernameById(2)}`,
+        tags: ["fun"],
+    },
+    {
+        id: 10,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785111944/post1-1_ijepvh.jpg", type: "image" }],
+        username: "xsofiis",
+        date: "2026-07-09T08:26:00Z",
+        description: "motomami 🏍️",
+        tags: ["fun"],
+    },
+    {
+        id: 11,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112171/post2-1_c6sn81.jpg", type: "image" }],
+        username: "xsofiis",
+        date: "2026-07-09T08:26:00Z",
+        description: "🚿",
+        tags: ["fun"],
+    },
+    {
+        id: 12,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112217/nullpost0-1_zuxc8c.jpg", type: "image" }],
+        username: null, // Venpixel
+        date: "2026-07-08T03:45:00Z",
+        description: "habemus portal",
+        tags: ["buildings"],
+    },
+    {
+        id: 13,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112020/post2-1_jdhsar.jpg", type: "image" }],
+        username: "MattCrowley3995",
+        date: "2026-07-10T12:28:00Z",
+        description: "🛵",
+        tags: ["buildings"],
+    },
+    {
+        id: 14,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112232/nullpost1-1_xekxeb.jpg", type: "image" }],
+        username: null, // Venpixel
+        date: "2026-07-10T04:36:00Z",
+        description: "al q se le antoje comida ya hay cafeteria",
+        tags: ["buildings", "decoration", "food"],
+    },
+    {
+        id: 15,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112320/post2-1_a8r8q6.jpg", type: "image" }],
+        username: getUsernameById(6),
+        date: "2026-07-12T22:18:00Z",
+        description: "con una chingada, a que hora va salir mi pedido",
+        tags: ["fun"],
+    },
+    {
+        id: 16,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112405/post3-1_zxl7md.jpg", type: "image" }],
+        username: "xsofiis",
+        date: "2026-07-12T21:36:00Z",
+        description: `@${getUsernameById(6)} captado en cámara`,
+        tags: ["fun"],
+    },
+    {
+        id: 17,
+        resources: [{ src: "https://res.cloudinary.com/ddtrthy26/image/upload/v1785112030/post3-1_keh93x.jpg", type: "image" }],
+        username: "MattCrowley3995",
+        date: "2026-07-13T01:06:00Z",
+        description: `lore acaba de crear una familia de gatos gordos @${getUsernameById(4)}`,
+        tags: ["fun", "pets"],
+    },
 ];
+
+function getUsernameById(id: number): string | null {
+    return users.find((user) => user.id === id)?.name || null;
+}
+
