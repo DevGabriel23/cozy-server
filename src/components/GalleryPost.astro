@@ -1,110 +1,164 @@
 ---
 // src/components/GalleryPost.astro
 import { formatRelativeDate } from "../utils/dateUtils";
+import type { GalleryPostData } from "../data/galleryPosts";
+import { TAG_CATALOG } from "../data/tags";
 import GalleryModal from "./GalleryModal.astro";
 import IconDownload from "./icons/IconDownload.astro";
 import IconLink from "./icons/IconLink.astro";
+import UserAvatar from "./UserAvatar.astro";
+import { parseMentions } from "../utils/textUtils";
 
 interface Props {
-	id: number | string;
-	images: string[];
-	username: string | null;
-	date: string;
-	description: string;
+	post: GalleryPostData;
+	isDetailView?: boolean;
 }
 
-const { id, images, username, date, description } = Astro.props;
+const { post, isDetailView } = Astro.props;
+const { id, resources, username, date, description, tags } = post;
 const menuId = `menu-${id}`;
-const hasMultiple = images.length > 1;
+const hasMultiple = resources.length > 1;
 ---
 
 <article
-	class="bg-surface rounded-2xl overflow-hidden border border-hairline shadow-sm relative post-card"
-	data-images={JSON.stringify(images)}
+	class={`overflow-hidden relative post-card bg-surface rounded-md border border-hairline shadow-sm group`}
+	data-resources={JSON.stringify(resources)}
 	data-post-id={id}
+	data-tags={tags ? JSON.stringify(tags) : "[]"}
+	data-username={username?.toLowerCase() ?? "desconocido"}
+	data-is-detail={isDetailView ? "true" : "false"}
 >
-	<div class="flex items-center gap-3 p-3 relative z-10">
-		<div
-			class="rounded-full bg-brand-sage text-white font-bold w-9 h-9 flex items-center justify-center text-sm shadow-inner"
-		>
-			{username?.slice(0, 2).toUpperCase() ?? "??"}
-		</div>
+	<div
+		class={`items-center gap-3 p-3 relative z-10 ${isDetailView ? "hidden" : "flex"}`}
+	>
+		<UserAvatar username={username} size="md" />
 		<h4 class="font-bold text-ink-primary text-sm">
 			{username ?? "Desconocido"}
 		</h4>
 
 		<div class="ml-auto relative">
 			<button
-				class="options-btn p-2 hover:bg-ink-muted/10 rounded-full cursor-pointer"
+				class="options-btn p-2 hover:bg-ink-muted/10 rounded-full cursor-pointer text-ink-primary"
+				aria-label="Opciones de publicación"
 			>
 				<svg
 					width="20"
 					height="20"
 					viewBox="0 0 24 24"
 					fill="currentColor"
-					><circle cx="12" cy="12" r="2"></circle><circle
-						cx="12"
-						cy="5"
-						r="2"></circle><circle cx="12" cy="19" r="2"
-					></circle></svg
 				>
+					<circle cx="12" cy="12" r="2"></circle>
+					<circle cx="12" cy="5" r="2"></circle>
+					<circle cx="12" cy="19" r="2"></circle>
+				</svg>
 			</button>
 
 			<div
 				id={menuId}
-				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-xl shadow-xl border border-hairline w-40 bg-surface z-50"
+				class="options-menu hidden absolute right-0 mt-2 p-2 rounded-lg shadow-soft border border-hairline w-40 bg-surface z-50"
 			>
 				<a
-					href={images[0]}
+					href={resources[0]?.src ?? "#"}
 					download
-					class="save-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm"
+					class="save-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm text-ink-primary"
 				>
 					<IconDownload
 						class="w-5 h-5"
 						aria-label="Descargar imagen"
 					/>
-					Descargar</a
-				>
+					Descargar
+				</a>
 				<button
-					class="share-btn p-3 hover:bg-surface-muted rounded-lg flex items-center gap-3 text-sm w-full text-left"
+					class="share-btn p-3 hover:bg-surface-hover rounded-lg flex items-center gap-3 text-sm w-full text-left text-ink-primary cursor-pointer"
 				>
 					<IconLink class="w-5 h-5" aria-label="Compartir imagen" />
-					Compartir</button
-				>
+					Compartir
+				</button>
 			</div>
 		</div>
 	</div>
 
-	<div class="relative group aspect-square overflow-hidden bg-surface">
+	<div
+		class={`relative aspect-square overflow-hidden bg-surface ${isDetailView ? "md:aspect-video" : ""}`}
+	>
 		{
 			hasMultiple && (
-				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none counter z-10">
-					1/{images.length}
+				<div class="absolute top-3 right-3 bg-black/60 text-white text-xs px-2.5 py-1 rounded-full font-body font-medium pointer-events-none counter z-10">
+					1/{resources.length}
 				</div>
 			)
 		}
 
+		<button
+			class="audio-btn mute-toggle-btn absolute bottom-3 right-3 bg-black/60 text-white p-2 rounded-full opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300 z-10 hidden shadow-md hover:scale-110 transform cursor-pointer"
+			aria-label="Silenciar / Activar sonido"
+		>
+			<!-- Icono de Muted -->
+			<svg
+				class="w-4 h-4 icon-muted"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line
+					x1="23"
+					y1="9"
+					x2="17"
+					y2="15"></line><line x1="17" y1="9" x2="23" y2="15"
+				></line></svg
+			>
+			<!-- Icono de Unmuted -->
+			<svg
+				class="w-4 h-4 icon-unmuted hidden"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path
+					d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"
+				></path></svg
+			>
+		</button>
+
 		<div
-			class="carousel-container flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth cursor-pointer"
+			class={`carousel-container scrollbar-hidden flex w-full h-full overflow-x-auto snap-x snap-mandatory scroll-smooth ${!isDetailView ? "cursor-pointer" : ""}`}
 		>
 			{
-				images.map((img) => (
-					<img
-						src={img}
-						draggable="false"
-						class="carousel-item min-w-full w-full h-full object-cover snap-start shrink-0 select-none"
-					/>
-				))
+				resources.map((res) =>
+					res.type === "video" ? (
+						<video
+							src={res.src}
+							autoplay
+							loop
+							muted
+							playsinline
+							draggable="false"
+							class="carousel-item min-w-full w-full h-full object-cover snap-start shrink-0 select-none"
+						/>
+					) : (
+						<img
+							src={res.src}
+							draggable="false"
+							class="carousel-item min-w-full w-full h-full object-cover snap-start shrink-0 select-none"
+						/>
+					),
+				)
 			}
 		</div>
 
 		{
 			hasMultiple && (
 				<>
-					<button class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 prev-btn z-10 shadow-md">
+					<button
+						class="absolute w-8 h-8 left-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform hover:scale-110 prev-btn z-10 shadow-md cursor-pointer text-ink-primary"
+						aria-label="Anterior"
+					>
 						❮
 					</button>
-					<button class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-white/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition transform hover:scale-110 next-btn z-10 shadow-md">
+					<button
+						class="absolute w-8 h-8 right-2 top-1/2 -translate-y-1/2 bg-surface/90 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform hover:scale-110 next-btn z-10 shadow-md cursor-pointer text-ink-primary"
+						aria-label="Siguiente"
+					>
 						❯
 					</button>
 				</>
@@ -116,7 +170,7 @@ const hasMultiple = images.length > 1;
 		{
 			hasMultiple && (
 				<div class="flex justify-center gap-1.5 mb-3 indicators">
-					{images.map((_, i) => (
+					{resources.map((_, i) => (
 						<div
 							class={`w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === 0 ? "bg-brand-sage" : "bg-ink-muted"}`}
 						/>
@@ -124,35 +178,80 @@ const hasMultiple = images.length > 1;
 				</div>
 			)
 		}
-		<p class="text-ink-primary text-sm font-body">
-			<span class="font-bold mr-2">{username}</span>{description}
-		</p>
+
+		{
+			isDetailView ? (
+				<div>
+					<div class="flex items-center gap-3 relative mb-3">
+						<UserAvatar username={username} size="md" />
+						<h4 class="font-bold text-ink-primary text-sm">
+							{username ?? "Desconocido"}
+						</h4>
+
+						<a
+							href={resources[0]?.src ?? "#"}
+							download
+							class="detail-download-btn ml-auto inline-flex items-center gap-2 px-4 py-4 sm:py-2 bg-brand-sage/15 text-brand-sage-deep hover:bg-brand-sage hover:text-on-dark rounded-full text-sm font-bold transition-colors shadow-sm"
+						>
+							<IconDownload class="w-4 h-4" />
+							<span class="hidden sm:inline">Descargar</span>
+						</a>
+					</div>
+					<p class="text-ink-primary text-sm font-body">
+						<Fragment set:html={parseMentions(description)} />
+					</p>
+				</div>
+			) : (
+				<p class="text-ink-primary text-sm font-body">
+					<span class="font-bold mr-2">{username}</span>
+					<Fragment set:html={parseMentions(description)} />
+				</p>
+			)
+		}
+
 		<p class="text-ink-secondary text-xs mt-2">
 			{formatRelativeDate(date)}
 		</p>
+
+		{
+			tags && tags.length > 0 && (
+				<div class="flex flex-wrap gap-1.5 mt-2">
+					{tags.map((tagSlug) => {
+						const tag = TAG_CATALOG.find(
+							(t) => t.value === tagSlug,
+						);
+						return tag ? (
+							<span
+								class={`text-xs px-2.5 py-0.5 rounded-full font-body font-medium ${tag.color}`}
+							>
+								{tag.icon} {tag.name}
+							</span>
+						) : null;
+					})}
+				</div>
+			)
+		}
 	</div>
 </article>
 
-<GalleryModal
-	id={id}
-	images={images}
-	username={username}
-	date={date}
-	description={description}
-/>
-
-<style>
-	.carousel-container {
-		scrollbar-width: none;
-		-ms-overflow-style: none;
-	}
-	.carousel-container::-webkit-scrollbar {
-		display: none;
-	}
-</style>
+{
+	!isDetailView && (
+		<GalleryModal
+			id={id}
+			resources={resources}
+			username={username}
+			date={date}
+			description={description}
+		/>
+	)
+}
 
 <script>
+	import { initMediaControllers, updateActiveSlideMedia } from "../utils/mediaController";
+
 	document.addEventListener("astro:page-load", () => {
+		initMediaControllers();
+
 		// Cierra los menús globales al hacer clic fuera
 		window.addEventListener("click", () =>
 			document
@@ -161,15 +260,16 @@ const hasMultiple = images.length > 1;
 		);
 
 		document
-			.querySelectorAll("article[data-post-id]")
+			.querySelectorAll<HTMLElement>("article[data-post-id]")
 			.forEach((article) => {
 				if (article.hasAttribute("data-initialized")) return;
 				article.setAttribute("data-initialized", "true");
 
 				const postId = article.getAttribute("data-post-id");
-				const images = JSON.parse(
-					article.getAttribute("data-images") || "[]",
+				const resources = JSON.parse(
+					article.getAttribute("data-resources") || "[]",
 				);
+				const imageSrcs = resources.map((r: { src: string }) => r.src);
 				const container = article.querySelector(
 					".carousel-container",
 				) as HTMLElement;
@@ -191,14 +291,35 @@ const hasMultiple = images.length > 1;
 
 				shareBtn?.addEventListener("click", (e) => {
 					e.stopPropagation();
-					const postUrl = `${window.location.origin}${window.location.pathname}?id=${postId}`;
+					const postUrl = `${window.location.origin}/gallery/${postId}`;
 					navigator.clipboard
 						.writeText(postUrl)
-						.then(() => alert("¡Enlace copiado!"));
+						.then(() => showToast("¡Enlace copiado!"));
 					article
 						.querySelector(".options-menu")
 						?.classList.add("hidden");
 				});
+
+				function showToast(message: string) {
+					let toast = document.getElementById("global-toast");
+					if (!toast) {
+						toast = document.createElement("div");
+						toast.id = "global-toast";
+						toast.className =
+							"fixed bottom-8 left-1/2 -translate-x-1/2 bg-brand-sage text-on-dark rounded-full px-6 py-3 shadow-soft font-body text-sm z-200 opacity-0 translate-y-2 transition-all duration-300 ease-out pointer-events-none";
+						document.body.appendChild(toast);
+					}
+					toast.textContent = message;
+					clearTimeout(Number(toast.dataset.timer));
+					requestAnimationFrame(() => {
+						toast!.classList.remove("opacity-0", "translate-y-2");
+						toast!.classList.add("opacity-100", "translate-y-0");
+					});
+					toast.dataset.timer = setTimeout(() => {
+						toast!.classList.remove("opacity-100", "translate-y-0");
+						toast!.classList.add("opacity-0", "translate-y-2");
+					}, 3000).toString();
+				}
 
 				if (!container) return;
 
@@ -207,6 +328,9 @@ const hasMultiple = images.length > 1;
 					".counter",
 				) as HTMLElement;
 				const dots = article.querySelectorAll(".indicators > div");
+				const detailDownloadBtn = article.querySelector(
+					".detail-download-btn",
+				) as HTMLAnchorElement;
 				const saveBtn = article.querySelector(
 					".save-btn",
 				) as HTMLAnchorElement;
@@ -223,8 +347,12 @@ const hasMultiple = images.length > 1;
 						container.scrollLeft / container.clientWidth,
 					);
 
+					if (detailDownloadBtn && imageSrcs[index]) {
+						detailDownloadBtn.href = imageSrcs[index];
+					}
+
 					if (counter) {
-						counter.textContent = `${index + 1}/${images.length}`;
+						counter.textContent = `${index + 1}/${imageSrcs.length}`;
 						counter.style.opacity = "1";
 						clearTimeout(
 							Number((article as HTMLElement).dataset.timer),
@@ -241,31 +369,15 @@ const hasMultiple = images.length > 1;
 						dot.className = `w-1.5 h-1.5 rounded-full transition-colors duration-300 ${i === index ? "bg-brand-sage" : "bg-ink-muted"}`;
 					});
 
-					if (saveBtn && images[index]) saveBtn.href = images[index];
+					if (saveBtn && imageSrcs[index])
+						saveBtn.href = imageSrcs[index];
 				});
 
-				// 3. Botones y Clic para Modal
-				article
-					.querySelector(".next-btn")
-					?.addEventListener("click", (e) => {
-						e.stopPropagation();
-						container.scrollBy({
-							left: container.clientWidth,
-							behavior: "smooth",
-						});
-					});
-
-				article
-					.querySelector(".prev-btn")
-					?.addEventListener("click", (e) => {
-						e.stopPropagation();
-						container.scrollBy({
-							left: -container.clientWidth,
-							behavior: "smooth",
-						});
-					});
-
 				container.addEventListener("click", () => {
+					const isDetail =
+						article.getAttribute("data-is-detail") === "true";
+					if (isDetail) return;
+
 					const newUrl = `${window.location.pathname}?id=${postId}`;
 					window.history.pushState({ path: newUrl }, "", newUrl);
 					const modal = document.getElementById(`extended-${postId}`);
@@ -273,6 +385,12 @@ const hasMultiple = images.length > 1;
 						modal.classList.remove("hidden");
 						modal.classList.add("flex");
 						document.body.style.overflow = "hidden";
+						const modalContainer = modal.querySelector(
+							".carousel-container-modal",
+						) as HTMLElement | null;
+						if (modalContainer) {
+							updateActiveSlideMedia(modal, modalContainer);
+						}
 					}
 				});
 			});

@@ -1,0 +1,391 @@
+---
+// src/pages/gallery/index.astro
+import GalleryPost from "../../components/GalleryPost.astro";
+import Layout from "../../layouts/Layout.astro";
+import UserAvatar from "../../components/UserAvatar.astro";
+import { galleryPosts } from "../../data/galleryPosts";
+import { TAG_CATALOG } from "../../data/tags";
+
+galleryPosts.sort((a, b) => Date.parse(b.date) - Date.parse(a.date));
+
+const uniqueUsers = [
+	...new Set(galleryPosts.map((post) => post.username).filter(Boolean)),
+] as string[];
+---
+
+<Layout
+	title="Galería - Cozy Server"
+	description="Capturas y momentos especiales de nuestra comunidad en Cozy Server."
+>
+	<main class="max-w-6xl mx-auto px-6 py-20">
+		<header class="text-center mb-12 mt-8">
+			<h1 class="font-heading text-5xl text-ink-primary mb-6">
+				Momentos Cozy
+			</h1>
+			<p class="text-ink-secondary text-lg max-w-2xl mx-auto">
+				Una pequeña selección de los recuerdos más bonitos compartidos
+				por nuestra comunidad. ¿Tienes una captura épica? ¡Compártela en
+				nuestro Discord!
+			</p>
+		</header>
+
+		<!-- Barra de Stories por Usuario -->
+		<div class="mb-8" id="stories-bar">
+			<div
+				class="flex items-center gap-4 overflow-x-auto pb-4 pt-2 px-2 scrollbar-hidden justify-start md:justify-center"
+			>
+				{/* Opción 'Todos' */}
+				<button
+					data-user-filter="all"
+					class="user-filter-btn flex flex-col items-center gap-2 shrink-0 group cursor-pointer focus:outline-none"
+				>
+					<div
+						class="w-14 h-14 rounded-full bg-brand-sage text-on-dark flex items-center justify-center text-xl shadow-soft ring-2 ring-brand-sage ring-offset-2 ring-offset-canvas transition-all group-hover:scale-105"
+					>
+						🌟
+					</div>
+					<span
+						class="text-xs font-bold text-ink-primary truncate max-w-[72px]"
+					>
+						Todos
+					</span>
+				</button>
+
+				{/* Lista de Usuarios */}
+				{
+					uniqueUsers.map((username) => (
+						<button
+							data-user-filter={username.toLowerCase()}
+							class="user-filter-btn flex flex-col items-center gap-2 shrink-0 group cursor-pointer focus:outline-none"
+						>
+							<div class="avatar-wrapper rounded-full p-0.5 transition-all group-hover:scale-105">
+								<UserAvatar username={username} size="lg" />
+							</div>
+							<span class="text-xs font-medium text-ink-secondary group-hover:text-ink-primary truncate max-w-[72px]">
+								{username}
+							</span>
+						</button>
+					))
+				}
+			</div>
+		</div>
+
+		<!-- Barra de Búsqueda por Texto -->
+		<div class="max-w-md mx-auto mb-6 relative">
+			<input
+				type="text"
+				id="search-input"
+				placeholder="Buscar por usuario o descripción..."
+				class="w-full px-4 py-2.5 pl-10 rounded-full border border-hairline bg-surface text-ink-primary text-sm placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-brand-sage transition-all shadow-sm"
+			/>
+			<svg
+				class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-muted pointer-events-none"
+				fill="none"
+				viewBox="0 0 24 24"
+				stroke="currentColor"
+			>
+				<path
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					stroke-width="2"
+					d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+			</svg>
+		</div>
+
+		<!-- Filtros de Tags -->
+		<div class="flex flex-wrap justify-center gap-2 mb-10" id="filter-bar">
+			{
+				TAG_CATALOG.map((tag) => (
+					<button
+						data-filter={tag.value}
+						class={`filter-btn text-sm px-3.5 py-1.5 rounded-full border border-hairline bg-surface text-ink-secondary transition-all duration-200 hover:bg-surface-hover hover:shadow-soft cursor-pointer`}
+					>
+						{tag.icon} {tag.name}
+					</button>
+				))
+			}
+		</div>
+
+		{
+			galleryPosts.length > 0 ? (
+				<section class="grid grid-cols-1 gap-8 max-w-lg mx-auto">
+					{galleryPosts.map((post) => (
+						<GalleryPost post={post} />
+					))}
+				</section>
+			) : (
+				<div class="text-center py-20 bg-surface rounded-lg border border-hairline">
+					<p class="text-ink-secondary text-lg">
+						🌱 Aún estamos preparando la galería. <br />
+						¡Pronto verás aquí los momentos más especiales de
+						nuestra comunidad!
+					</p>
+				</div>
+			)
+		}
+
+		<div
+			id="empty-state"
+			class="hidden flex-col items-center justify-center py-16 text-center col-span-full bg-surface/50 rounded-3xl border-dashed border-2 border-brand-sage/20 mt-8"
+		>
+			<span class="text-5xl mb-4 opacity-80">🍃</span>
+			<h3 class="text-xl font-bold text-ink-primary mb-2">
+				¡Vaya, está muy tranquilo por aquí!
+			</h3>
+			<p class="text-ink-primary/70 text-sm max-w-sm mx-auto">
+				No encontramos ningún momento que coincida con tus filtros.
+				Intenta buscar otro jugador o categoría.
+			</p>
+			<button
+				id="reset-filters"
+				class="mt-6 px-6 py-2 bg-brand-sage text-on-dark rounded-full text-sm font-bold hover:bg-brand-sage-deep transition cursor-pointer"
+			>
+				Limpiar filtros
+			</button>
+		</div>
+	</main>
+</Layout>
+
+<script>
+	document.addEventListener("astro:page-load", () => {
+		// Referencias al DOM
+		const emptyState = document.getElementById("empty-state");
+		const resetBtn = document.getElementById("reset-filters");
+		const searchInput = document.getElementById(
+			"search-input",
+		) as HTMLInputElement | null;
+		const filterBar = document.getElementById("filter-bar");
+		const userBtns =
+			document.querySelectorAll<HTMLButtonElement>(".user-filter-btn");
+		const filterBtns =
+			document.querySelectorAll<HTMLButtonElement>(".filter-btn");
+		const articles =
+			document.querySelectorAll<HTMLElement>("article.post-card");
+
+		if (!filterBar || filterBar.hasAttribute("data-init-filters")) return;
+		filterBar.setAttribute("data-init-filters", "true");
+
+		const activeTags = new Set<string>();
+		let selectedUser: string | null = null;
+
+		// Read URL parameters on load
+		const urlParams = new URLSearchParams(window.location.search);
+		const postId = urlParams.get("id");
+		if (postId) {
+			const modal = document.getElementById(`extended-${postId}`);
+			if (modal) {
+				modal.classList.remove("hidden");
+				modal.classList.add("flex");
+				document.body.style.overflow = "hidden";
+			}
+		}
+
+		const urlTags = urlParams.get("tags");
+		if (urlTags) {
+			urlTags.split(",").forEach((t) => {
+				const trimmed = t.trim();
+				if (trimmed) activeTags.add(trimmed);
+			});
+		}
+
+		const urlUser = urlParams.get("user");
+		if (urlUser) {
+			selectedUser = urlUser.toLowerCase();
+		}
+
+		const urlQuery = urlParams.get("q");
+		if (urlQuery && searchInput) {
+			searchInput.value = urlQuery;
+		}
+
+		updateFilterUI();
+		updateUserUI();
+		applyFilters();
+
+		// Event listeners for user stories bar
+		userBtns.forEach((btn) => {
+			btn.addEventListener("click", () => {
+				const val = btn.getAttribute("data-user-filter");
+				if (!val || val === "all") {
+					selectedUser = null;
+				} else {
+					selectedUser = selectedUser === val ? null : val;
+				}
+				updateUserUI();
+				applyFilters();
+				syncURL();
+			});
+		});
+
+		// Event listeners for tags
+		filterBtns.forEach((btn) => {
+			btn.addEventListener("click", () => {
+				const tag = btn.getAttribute("data-filter");
+				if (!tag) return;
+
+				if (activeTags.has(tag)) {
+					activeTags.delete(tag);
+				} else {
+					activeTags.add(tag);
+				}
+
+				updateFilterUI();
+				applyFilters();
+				syncURL();
+			});
+		});
+
+		// Event listener for search input
+		searchInput?.addEventListener("input", () => {
+			applyFilters();
+			syncURL();
+		});
+
+		// Reset filters button
+		if (resetBtn) {
+			resetBtn.addEventListener("click", () => {
+				activeTags.clear();
+				selectedUser = null;
+				if (searchInput) searchInput.value = "";
+				updateFilterUI();
+				updateUserUI();
+				applyFilters();
+				syncURL();
+			});
+		}
+
+		function updateUserUI() {
+			userBtns.forEach((btn) => {
+				const val = btn.getAttribute("data-user-filter");
+				const avatarWrapper = btn.querySelector(".avatar-wrapper");
+				const iconDiv = btn.querySelector("div");
+				const isAllBtn = val === "all";
+				const isActive = isAllBtn
+					? selectedUser === null
+					: selectedUser === val;
+
+				if (isAllBtn && iconDiv) {
+					iconDiv.classList.toggle(
+						"ring-2",
+						isActive,
+					);
+					iconDiv.classList.toggle(
+						"ring-brand-sage",
+						isActive,
+					);
+					iconDiv.classList.toggle(
+						"ring-offset-2",
+						isActive,
+					);
+					iconDiv.classList.toggle(
+						"ring-offset-canvas",
+						isActive,
+					);
+				} else if (avatarWrapper) {
+					avatarWrapper.classList.toggle(
+						"ring-2",
+						isActive,
+					);
+					avatarWrapper.classList.toggle(
+						"ring-brand-sage",
+						isActive,
+					);
+					avatarWrapper.classList.toggle(
+						"ring-offset-2",
+						isActive,
+					);
+					avatarWrapper.classList.toggle(
+						"ring-offset-canvas",
+						isActive,
+					);
+				}
+			});
+		}
+
+		function updateFilterUI() {
+			filterBtns.forEach((btn) => {
+				const tag = btn.getAttribute("data-filter");
+				const isActive = activeTags.has(tag!);
+				btn.classList.toggle("bg-brand-sage", isActive);
+				btn.classList.toggle("text-on-dark", isActive);
+				btn.classList.toggle("border-brand-sage", isActive);
+				btn.classList.toggle("bg-surface", !isActive);
+				btn.classList.toggle("text-ink-secondary", !isActive);
+				btn.classList.toggle("border-hairline", !isActive);
+			});
+		}
+
+		function applyFilters() {
+			let visibleCount = 0;
+			const query = searchInput?.value.trim().toLowerCase() ?? "";
+
+			articles.forEach((article) => {
+				// 1. Condition: Tags
+				const postTags: string[] = JSON.parse(
+					article.getAttribute("data-tags") || "[]",
+				);
+				const matchesTags =
+					activeTags.size === 0 ||
+					[...activeTags].every((t) => postTags.includes(t));
+
+				// 2. Condition: Selected User
+				const postUser = (
+					article.getAttribute("data-username") || ""
+				).toLowerCase();
+				const matchesUser =
+					!selectedUser || postUser === selectedUser;
+
+				// 3. Condition: Text Search
+				const postContent = (article.textContent || "").toLowerCase();
+				const matchesSearch = !query || postContent.includes(query);
+
+				const isVisible = matchesTags && matchesUser && matchesSearch;
+
+				article.style.display = isVisible ? "" : "none";
+
+				if (isVisible) {
+					visibleCount++;
+				}
+			});
+
+			// Empty state toggle
+			if (emptyState) {
+				if (visibleCount === 0) {
+					emptyState.classList.remove("hidden");
+					emptyState.classList.add("flex");
+				} else {
+					emptyState.classList.add("hidden");
+					emptyState.classList.remove("flex");
+				}
+			}
+		}
+
+		function syncURL() {
+			const params = new URLSearchParams(window.location.search);
+			if (activeTags.size > 0) {
+				params.set("tags", [...activeTags].join(","));
+			} else {
+				params.delete("tags");
+			}
+
+			if (selectedUser) {
+				params.set("user", selectedUser);
+			} else {
+				params.delete("user");
+			}
+
+			const q = searchInput?.value.trim();
+			if (q) {
+				params.set("q", q);
+			} else {
+				params.delete("q");
+			}
+
+			const newURL =
+				window.location.pathname +
+				(params.toString() ? `?${params.toString()}` : "");
+			window.history.pushState({ path: newURL }, "", newURL);
+		}
+	});
+</script>
+

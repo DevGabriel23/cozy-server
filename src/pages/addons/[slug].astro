@@ -1,7 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import { getCollection, render } from "astro:content";
-import { generateAddonImageFallback } from "../../utils/imageUtils";
 import AddonCard from "../../components/AddonCard.astro";
 import Gallery from "../../components/Gallery.astro";
 import { getAddonAssets } from "../../utils/addonResolver";
@@ -30,8 +29,8 @@ const allAddons = (await getCollection("addons")).filter(
 	title={`${addon.data.title} - Cozy Server`}
 	description={addon.data.description}
 >
-	<div class="addon-detail">
-		<header class="addon-header mb-8 mt-18">
+	<div class="max-w-180 mx-auto px-4 pt-6 pb-12">
+		<header class="mb-8 mt-18">
 			<nav class="mb-4 ">
 				<a
 					href="/"
@@ -55,13 +54,13 @@ const allAddons = (await getCollection("addons")).filter(
 
 			
 
-			<h1 class="text-4xl md:text-5xl font-heading text-ink-primary mb-2">
+			<h1 class="text-4xl md:text-5xl font-heading text-ink-primary mb-2 leading-tight font-semibold">
 				{addon.data.title}
 			</h1>
 
 			{
 				addon.data.creatorLink ? (
-					<p class="creator group">
+					<p class="font-body text-base text-ink-secondary my-0 group">
 						por{" "}
 						<a
 							href={addon.data.creatorLink}
@@ -73,7 +72,7 @@ const allAddons = (await getCollection("addons")).filter(
 						</a>
 					</p>
 				) : (
-					<p class="creator">
+					<p class="font-body text-base text-ink-secondary my-0">
 						por <span class="font-bold">{addon.data.creator}</span>
 					</p>
 				)
@@ -82,17 +81,18 @@ const allAddons = (await getCollection("addons")).filter(
 
 		{
 			addon.data.youtubeLink ? (
-				<div class="media-frame">
+				<div class="rounded-lg overflow-hidden shadow-soft mb-8 bg-surface">
 					<iframe
 						src={`https://www.youtube.com/embed/${addon.data.youtubeLink}`}
 						title={addon.data.title}
+						class="w-full aspect-video border-none block"
 						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
 						allowfullscreen
 					/>
 				</div>
 			) : (
-				<div class="media-frame">
-					<img src={assets.cover} alt={addon.data.title} />
+				<div class="rounded-lg overflow-hidden shadow-soft mb-8 bg-surface">
+					<img src={assets.cover} alt={addon.data.title} class="w-full block" />
 				</div>
 			)
 		}
@@ -127,132 +127,3 @@ const allAddons = (await getCollection("addons")).filter(
 	</div>
 </Layout>
 
-<style is:global>
-	.addon-detail {
-		max-width: 720px;
-		margin: 0 auto;
-		padding: 24px 16px 48px;
-	}
-
-	.addon-header {
-		margin-bottom: 32px;
-	}
-
-	.back-link {
-		display: inline-block;
-		color: var(--color-brand-sage);
-		text-decoration: none;
-		font-family: var(--font-body);
-		font-weight: 500;
-		margin-bottom: 16px;
-		transition: transform 0.3s ease;
-	}
-
-	.back-link:hover {
-		transform: translateX(-4px);
-	}
-
-	.addon-header h1 {
-		font-family: var(--font-heading);
-		font-size: 2.5rem;
-		font-weight: 600;
-		line-height: 1.2;
-		color: var(--color-ink-primary);
-		margin: 0 0 8px;
-	}
-
-	.creator {
-		font-family: var(--font-body);
-		font-size: 1rem;
-		color: var(--color-ink-secondary);
-		margin: 0;
-	}
-
-	.media-frame {
-		border-radius: 24px;
-		overflow: hidden;
-		box-shadow: 0 8px 30px rgba(74, 64, 54, 0.06);
-		margin-bottom: 32px;
-		background-color: var(--color-surface);
-	}
-
-	.media-frame iframe {
-		width: 100%;
-		aspect-ratio: 16 / 9;
-		border: none;
-		display: block;
-	}
-
-	.media-frame img {
-		width: 100%;
-		display: block;
-	}
-
-	.explore-more {
-		border-top: 1px solid var(--color-hairline);
-		padding-top: 32px;
-	}
-
-	.explore-more h2 {
-		font-family: var(--font-heading);
-		font-size: 1.5rem;
-		font-weight: 500;
-		color: var(--color-ink-primary);
-		margin: 0 0 20px;
-	}
-
-	.explore-grid {
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 16px;
-	}
-
-	@media (min-width: 640px) {
-		.explore-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	.explore-card {
-		display: flex;
-		flex-direction: column;
-		background-color: var(--color-canvas);
-		border: 1px solid var(--color-hairline);
-		border-radius: 24px;
-		overflow: hidden;
-		box-shadow: 0 8px 30px rgba(74, 64, 54, 0.06);
-		text-decoration: none;
-		transition: all 0.3s ease;
-	}
-
-	.explore-card:hover {
-		box-shadow: 0 12px 40px rgba(74, 64, 54, 0.12);
-		transform: translateY(-4px);
-	}
-
-	.explore-card img {
-		width: 100%;
-		aspect-ratio: 16 / 10;
-		object-fit: cover;
-		display: block;
-	}
-
-	.explore-card-info {
-		padding: 16px;
-	}
-
-	.explore-card-info h3 {
-		font-family: var(--font-heading);
-		font-size: 1.125rem;
-		font-weight: 500;
-		color: var(--color-ink-primary);
-		margin: 0 0 4px;
-	}
-
-	.explore-card-info p {
-		font-family: var(--font-body);
-		font-size: 0.875rem;
-		color: var(--color-ink-secondary);
-		margin: 0;
-	}
-</style>

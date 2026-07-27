@@ -1,0 +1,36 @@
+---
+// src/components/UserAvatar.astro
+interface Props {
+	username: string | null;
+	avatarUrl?: string;
+	size?: "sm" | "md" | "lg";
+	class?: string;
+}
+
+const { username, avatarUrl, size = "md", class: customClass = "" } = Astro.props;
+
+const sizeClasses = {
+	sm: "w-8 h-8 text-xs",
+	md: "w-9 h-9 text-sm",
+	lg: "w-14 h-14 text-lg",
+};
+
+const dimensions = sizeClasses[size] || sizeClasses.md;
+const initials = username?.trim().slice(0, 2).toUpperCase() ?? "??";
+---
+
+<div
+	class={`rounded-full shrink-0 flex items-center justify-center font-bold overflow-hidden transition-all duration-300 ${dimensions} ${avatarUrl ? "bg-surface" : "bg-brand-sage text-on-dark shadow-inner"} ${customClass}`}
+>
+	{
+		avatarUrl ? (
+			<img
+				src={avatarUrl}
+				alt={username ?? "Avatar"}
+				class="w-full h-full object-cover"
+			/>
+		) : (
+			<span>{initials}</span>
+		)
+	}
+</div>

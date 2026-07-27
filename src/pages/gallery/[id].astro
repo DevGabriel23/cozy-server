@@ -1,0 +1,47 @@
+---
+// src/pages/gallery/[id].astro
+import Layout from "../../layouts/Layout.astro";
+import GalleryPost from "../../components/GalleryPost.astro";
+import { galleryPosts } from "../../data/galleryPosts";
+
+export function getStaticPaths() {
+	return galleryPosts.map((post) => ({
+		params: { id: post.id.toString() },
+		props: { post },
+	}));
+}
+
+const { post } = Astro.props;
+
+if (!post) {
+	return Astro.redirect("/gallery");
+}
+
+const firstResource = post.resources[0];
+
+function getOgImage(src: string, type: string): string {
+	if (type === "video" && src.includes("cloudinary")) {
+		return src.replace(/\.mp4$/, ".jpg");
+	}
+	return src;
+}
+
+const ogImage = getOgImage(firstResource.src, firstResource.type);
+---
+
+<Layout
+	title={`${post.username ?? "Anónimo"} - Galería Cozy Server`}
+	description={post.description}
+	image={ogImage}
+>
+	<main class="max-w-4xl mx-auto px-6 py-12 mt-12">
+		<a
+			href="/gallery"
+			class="inline-flex items-center gap-2 text-ink-secondary hover:text-brand-sage transition-colors mb-6 font-body text-sm font-medium"
+		>
+			← Volver a la galería
+		</a>
+
+		<GalleryPost post={post} isDetailView={true} />
+	</main>
+</Layout>
